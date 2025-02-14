@@ -1,0 +1,8 @@
+node_modules/
+vendor/
+.git/
+.github/
+.env
+storage/
+tests/
+docker-compose.yml
