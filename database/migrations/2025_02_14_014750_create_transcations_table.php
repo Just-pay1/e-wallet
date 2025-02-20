@@ -12,11 +12,12 @@ return new class extends Migration
     public function up(): void
         {
             Schema::create('transcations', function (Blueprint $table) {
-                $table->uuid()->primary();
-                $table->unsignedBigInteger('debit_from');
-                $table->foreign('debit_from')->references('id')->on('wallets'); 
-                $table->unsignedBigInteger('credit_to');
-                $table->foreign('credit_to')->references('id')->on('wallets'); 
+                $table->string('id', 10)->primary(); // 10-digit NanoID as primary key
+                $table->string('debit_from', 10);
+                $table->foreign('debit_from')->references('id')->on('wallets');
+            
+                $table->string('credit_to', 10);
+                $table->foreign('credit_to')->references('id')->on('wallets');
                 $table->decimal('amount',10,2);
                 $table->string('type');
                 $table->string('description');

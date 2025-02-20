@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('wallets', function (Blueprint $table) {
-            $table->id();
+            $table->string('id', 10)->primary(); // 10-digit NanoID as primary key
             $table->string('user_id');
             $table->decimal('balance',10,2)->default(0.0);
             $table->string('currency', 3)->default('EGP');
