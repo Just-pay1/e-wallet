@@ -16,3 +16,8 @@ Route::prefix('transaction')->group(function () {
     Route::get('/history', [TransactionController::class, 'history']);
  
 });
+
+Route::get('test', function() {
+    dd(DB::connection('remote_db')->getConfig());
+
+});
