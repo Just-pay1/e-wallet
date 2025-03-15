@@ -74,7 +74,7 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'), // Path to the SSL certificate
+                PDO::MYSQL_ATTR_SSL_CA => storage_path('cert/DigiCertGlobalRootCA.crt.pem'), // Path to the SSL certificate
                 // PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false, // Disable server certificate verification (optional)
             ]) : [],
         ],
