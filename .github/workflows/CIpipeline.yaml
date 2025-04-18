@@ -56,6 +56,8 @@ jobs:
              --build-arg QUEUE_CONNECTION="${{ secrets.QUEUE_CONNECTION }}" \
              --build-arg CACHE_STORE="${{ secrets.CACHE_STORE }}" \
              --build-arg CACHE_PREFIX="${{ secrets.CACHE_PREFIX }}" \
+             --build-arg VITE_APP_NAME="${{ secrets.VITE_APP_NAME }}" \
+             --build-arg MYSQL_ATTR_SSL_CA="${{ secrets.MYSQL_ATTR_SSL_CA }}" \
              -t ewallet .
 
     - name: Tag Docker image
