@@ -7,12 +7,16 @@ use Illuminate\Http\Request;
 Route::prefix('wallet')->group(function () {
     Route::get('/getBalance', [WalletController::class, 'getBalance']);
     Route::post('/create', [WalletController::class, 'createWallet']);
+
     Route::post('/deposit', [WalletController::class, 'deposit']);
+
+
     Route::post('/withdraw', [WalletController::class, 'withdraw']);
 
   
 });
 Route::prefix('transaction')->group(function () {
+
     Route::post('/transfer', [TransactionController::class, 'transfer']);
     Route::get('/history', [TransactionController::class, 'history']);
  
@@ -28,4 +32,8 @@ Route::post('/test', function(Request $request) {
     // Return the headers as a JSON response
     return response()->json($headers);
     // return "here";
+
+    
 });
+
+

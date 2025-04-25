@@ -1,0 +1,70 @@
+name: Build and Push Docker Image of ewallet service
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Login to Azure Container Registry
+      uses: azure/docker-login@v1
+      with:
+        login-server: ${{ secrets.ACR_USERNAME }}.azurecr.io
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+
+    - name: Build Docker image
+      run: |
+        docker build  \
+             --build-arg APP_NAME="${{ secrets.APP_NAME }}" \
+             --build-arg APP_ENV="${{ secrets.APP_ENV }}" \
+             --build-arg APP_KEY="${{ secrets.APP_KEY }}" \
+             --build-arg APP_DEBUG="${{ secrets.APP_DEBUG }}" \
+             --build-arg APP_TIMEZONE="${{ secrets.APP_TIMEZONE }}" \
+             --build-arg APP_URL="${{ secrets.APP_URL }}" \
+             --build-arg APP_LOCALE="${{ secrets.APP_LOCALE }}" \
+             --build-arg APP_FALLBACK_LOCALE="${{ secrets.APP_FALLBACK_LOCALE }}" \
+             --build-arg APP_FAKER_LOCALE="${{ secrets.APP_FAKER_LOCALE }}" \
+             --build-arg APP_MAINTENANCE_DRIVER="${{ secrets.APP_MAINTENANCE_DRIVER }}" \
+             --build-arg PHP_CLI_SERVER_WORKERS="${{ secrets.PHP_CLI_SERVER_WORKERS }}" \
+             --build-arg BCRYPT_ROUNDS="${{ secrets.BCRYPT_ROUNDS }}" \
+             --build-arg LOG_CHANNEL="${{ secrets.LOG_CHANNEL }}" \
+             --build-arg LOG_STACK="${{ secrets.LOG_STACK }}" \
+             --build-arg LOG_DEPRECATIONS_CHANNEL="${{ secrets.LOG_DEPRECATIONS_CHANNEL }}" \
+             --build-arg LOG_LEVEL="${{ secrets.LOG_LEVEL }}" \
+             --build-arg DB_CONNECTION="${{ secrets.DB_CONNECTION }}" \
+             --build-arg DB_REMOTE_HOST="${{ secrets.DB_REMOTE_HOST }}" \
+             --build-arg DB_REMOTE_PORT="${{ secrets.DB_REMOTE_PORT }}" \
+             --build-arg DB_REMOTE_DATABASE="${{ secrets.DB_REMOTE_DATABASE }}" \
+             --build-arg DB_REMOTE_USERNAME="${{ secrets.DB_REMOTE_USERNAME }}" \
+             --build-arg DB_REMOTE_PASSWORD="${{ secrets.DB_REMOTE_PASSWORD }}" \
+             --build-arg DB_OPTIONS="${{ secrets.DB_OPTIONS }}" \
+             --build-arg SESSION_DRIVER="${{ secrets.SESSION_DRIVER }}" \
+             --build-arg SESSION_LIFETIME="${{ secrets.SESSION_LIFETIME }}" \
+             --build-arg SESSION_ENCRYPT="${{ secrets.SESSION_ENCRYPT }}" \
+             --build-arg SESSION_PATH="${{ secrets.SESSION_PATH }}" \
+             --build-arg SESSION_DOMAIN="${{ secrets.SESSION_DOMAIN }}" \
+             --build-arg BROADCAST_CONNECTION="${{ secrets.BROADCAST_CONNECTION }}" \
+             --build-arg FILESYSTEM_DISK="${{ secrets.FILESYSTEM_DISK }}" \
+             --build-arg QUEUE_CONNECTION="${{ secrets.QUEUE_CONNECTION }}" \
+             --build-arg CACHE_STORE="${{ secrets.CACHE_STORE }}" \
+             --build-arg CACHE_PREFIX="${{ secrets.CACHE_PREFIX }}" \
+             --build-arg VITE_APP_NAME="${{ secrets.VITE_APP_NAME }}" \
+             --build-arg MYSQL_ATTR_SSL_CA="${{ secrets.MYSQL_ATTR_SSL_CA }}" \
+             -t ewallet .
+
+    - name: Tag Docker image
+      run: |
+        docker tag ewallet ${{ secrets.ACR_USERNAME }}.azurecr.io/ewallet:latest
+
+    - name: Push Docker image to Azure Container Registry
+      run: |
+        docker push ${{ secrets.ACR_USERNAME }}.azurecr.io/ewallet:latest
+
