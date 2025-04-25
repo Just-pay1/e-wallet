@@ -3,21 +3,29 @@
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\WalletController;
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Http\Request;
 Route::prefix('wallet')->group(function () {
-    Route::get('/', [WalletController::class, 'getBalance']);
+    Route::get('/getBalance', [WalletController::class, 'getBalance']);
+    Route::post('/create', [WalletController::class, 'createWallet']);
     Route::post('/deposit', [WalletController::class, 'deposit']);
     Route::post('/withdraw', [WalletController::class, 'withdraw']);
 
   
 });
 Route::prefix('transaction')->group(function () {
-    Route::post('/', [TransactionController::class, 'transfer']);
+    Route::post('/transfer', [TransactionController::class, 'transfer']);
     Route::get('/history', [TransactionController::class, 'history']);
  
 });
 
-Route::get('test', function() {
-    dd(DB::connection('remote_db')->getConfig());
+Route::post('/test', function(Request $request) {
+    // dd(DB::connection('remote_db')->getConfig()); // This line is commented out and was likely used for debugging database connection details.
 
+    // $userId = $request->header('x-jwt-claim-user_id'); // Retrieve the user_id from the request headers.
+    // return response()->json(['user_id' => $userId]);
+    $headers = $request->headers->all();
+    $header = $request->header('x-consumer-id');
+    // Return the headers as a JSON response
+    return response()->json($headers);
+    // return "here";
 });

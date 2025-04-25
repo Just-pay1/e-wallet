@@ -60,7 +60,7 @@ return [
         ],
 
 
-        'remote_db' => [
+        'remote_db'=> [
             'driver' => 'mysql',
             'host' => env('DB_REMOTE_HOST', '127.0.0.1'),
             'port' => env('DB_REMOTE_PORT', '3306'),
