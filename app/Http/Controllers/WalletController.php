@@ -5,9 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\Transaction;
 use App\Models\Wallet;
 use Illuminate\Http\Request;
+use App\Services\WalletService;
 
 class WalletController extends Controller
 {
+    protected $walletService;
+
+    public function __construct(WalletService $walletService)
+    {
+        $this->walletService = $walletService;
+    }
+
     public function createWallet(Request $request)
     {
         $user_id = $request->header('X-User-ID');
@@ -64,5 +72,18 @@ class WalletController extends Controller
             return response()->json(['message' => 'Wallet Not Found'], 404);
         }
         return response()->json(['Balance' => $wallet->balance], 200);
-    } 
+    }
+
+    /**
+     * Get the wallet by user ID from the request header.
+     */
+    public function getWalletByUserId(Request $request)
+    {
+        $user_id = $request->header('X-User-ID');
+        $walletId = $this->walletService->getWalletIdByUserId($user_id);
+        if (!$walletId) {
+            return response()->json(['message' => 'Wallet Not Found'], 404);
+        }
+        return response()->json(['walletId' => $walletId], 200);
+    }
 }

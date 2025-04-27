@@ -19,5 +19,8 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+        
+        // Seed the just pay wallet
+        $this->call(\Database\Seeders\JustPayWalletSeeder::class);
     }
 }

@@ -7,9 +7,20 @@ use App\Models\Wallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-
+use Illuminate\Support\Facades\Http;
+use App\Services\WalletService;
 class TransactionController extends Controller
 {
+    protected $walletService;
+    public function __construct(WalletService $walletService)
+    {
+        $this->walletService = $walletService;
+    }
+    /**
+     * transfer money from one wallet to another
+     * @param \Illuminate\Http\Request $request
+     * @return mixed|\Illuminate\Http\JsonResponse
+     */
     public function transfer(Request $request)
     {
         $user_id = $request->header('X-User-ID');
@@ -61,5 +72,37 @@ class TransactionController extends Controller
                         ->get();
             
         return response()->json($transactions);
+    }
+
+    public function pay(Request $request)
+    {
+        try {
+            $user_id = $request->header('X-User-ID');
+            $validate = $request->validate([
+                'bill_id' => 'required|string|min:1',
+            ]);
+            $billId = $request->bill_id;
+            $billingServiceUrl = env('BILLING_SERVICE_URL');
+            $response = Http::get("{$billingServiceUrl}/bills/{$billId}");
+
+            if ($response->failed()) {
+                return response()->json(['error' => 'Failed to fetch bill from billing service'], 502);
+            }
+
+            $billData = $response->json();
+            $existingUserWallet = $this->walletService->userHasWallet($user_id);
+            $existingMerchantWallet = $this->walletService->userHasWallet($billData['merchant_id']);
+            if(!$existingUserWallet || !$existingMerchantWallet){
+                return response()->json(['error' => 'User or merchant wallet not found'], 404);
+            }
+            
+            // fraud detection
+
+            
+
+     
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Exception occurred while contacting billing service', 'details' => $e->getMessage()], 500);
+        }
     }
 }
