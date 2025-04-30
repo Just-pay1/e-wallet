@@ -5,14 +5,14 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\WalletController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
-Route::prefix('wallet')->group(function () {
+Route::prefix('/wallet')->group(function () {
     Route::get('/getBalance', [WalletController::class, 'getBalance']);
     Route::post('/wallet', [WalletController::class, 'createWallet']);
     Route::post('/deposit', [WalletController::class, 'deposit']);
     Route::post('/withdraw', [WalletController::class, 'withdraw']);
     Route::get('/by-user', [WalletController::class, 'getWalletByUserId']);
 });
-Route::prefix('transaction')->group(function () {
+Route::prefix('/transaction')->group(function () {
     Route::post('/transfer', [TransactionController::class, 'transfer']);
     Route::get('/history', [TransactionController::class, 'history']);
  
