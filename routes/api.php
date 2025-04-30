@@ -31,6 +31,13 @@ Route::post('/test', function(Request $request) {
 
     
 });
+Route::post('/debug-post', function (Request $request) {
+    return response()->json([
+        'method' => $request->method(),
+        'data' => $request->all(),
+    ]);
+});
+
 
 Route::post('/ip-address', [IpController::class, 'store']);
 
