@@ -4,8 +4,6 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\TrustProxies;
-use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Support\Facades\RateLimiter;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -15,17 +13,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Configure Rate Limiting
-        RateLimiter::for('api', function ($request) {
-            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
-        });
-
         $middleware->use([
             TrustProxies::class
         ]);
 
         $middleware->group('api', [
-            \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
+            'throttle:60,1',  // 60 requests per minute
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ]);
 
@@ -36,6 +29,10 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        ]);
+
+        $middleware->alias([
+            'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
