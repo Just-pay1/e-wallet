@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaction;
 use App\Models\Wallet;
+use App\Services\TransactionService;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Http;
@@ -12,9 +14,11 @@ use App\Services\WalletService;
 class TransactionController extends Controller
 {
     protected $walletService;
-    public function __construct(WalletService $walletService)
+    protected $TransactionService;
+    public function __construct(WalletService $walletService, TransactionService $transactionService)
     {
         $this->walletService = $walletService;
+        $this->TransactionService = $transactionService;
     }
     /**
      * transfer money from one wallet to another
@@ -97,7 +101,20 @@ class TransactionController extends Controller
             }
             
             // fraud detection
+            
+            $transactionResponse = $this->TransactionService->pay($billData, $user_id);
+            if ($transactionResponse['success'] == false)
+            {
+                return response()->json(['error'=> $transactionResponse['message']], 400);
+            }
 
+            // send http request to billing service to change status
+
+            return response()->json([
+                "message" => "Your transaction was completed successfully.",
+                "merchant_transaction" => $transactionResponse['merchant_transaction'],
+                "fee_transaction" => $transactionResponse['fee_transaction']
+            ], 200);
             
 
      
