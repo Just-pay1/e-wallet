@@ -6,6 +6,7 @@ use App\Models\Transaction;
 use App\Models\Wallet;
 use Illuminate\Http\Request;
 use App\Services\WalletService;
+use Illuminate\Routing\Controller;
 
 class WalletController extends Controller
 {
@@ -18,7 +19,7 @@ class WalletController extends Controller
 
     public function createWallet(Request $request)
     {
-        $user_id = $request->header('X-User-ID');
+        $user_id = $request['userId'];
         $wallet = Wallet::create([
             'user_id' => $user_id,
             'balance' => 0.0,
