@@ -1,3 +1,16 @@
+# First stage: Build dependencies
+FROM composer:latest AS composer_build
+
+# Set working directory
+WORKDIR /app
+
+# Copy composer files
+COPY composer.json composer.lock* ./
+
+# Install dependencies with ignore-platform-reqs flag
+RUN composer install --no-interaction --no-dev --optimize-autoloader --ignore-platform-reqs
+
+# Second stage: Build application
 FROM php:8.3-apache
 
 # Install system dependencies
@@ -26,25 +39,18 @@ RUN docker-php-ext-install \
     gd \
     zip
 
-# Install AMQP extension - required for php-amqplib
+# Install AMQP extension
 RUN pecl install amqp && \
     docker-php-ext-enable amqp
-
-# Get latest Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy composer files first
-COPY composer.json composer.lock* ./
-
-# Install dependencies with memory limit disabled and ignore platform reqs
-ENV COMPOSER_MEMORY_LIMIT=-1
-RUN composer install --no-interaction --no-dev --optimize-autoloader --ignore-platform-reqs
-
 # Copy application files
 COPY . .
+
+# Copy vendor directory from the composer build stage
+COPY --from=composer_build /app/vendor /var/www/html/vendor
 
 # Create storage directory if it doesn't exist
 RUN mkdir -p /var/www/html/storage/logs /var/www/html/storage/framework/sessions \
@@ -67,6 +73,7 @@ RUN echo '<VirtualHost *:80>\n\
     ErrorLog ${APACHE_LOG_DIR}/error.log\n\
     CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
+
 
 
 ARG DB_REMOTE_HOST
