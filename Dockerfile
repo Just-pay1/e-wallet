@@ -1,16 +1,3 @@
-# Use a multi-stage build to separate dependency installation
-FROM composer:latest AS composer
-
-# Set working directory
-WORKDIR /app
-
-# Copy only the files needed for composer install
-COPY composer.json composer.lock* ./
-
-# Install dependencies with verbose output
-RUN composer install --no-interaction --no-dev --optimize-autoloader -v
-
-# Final image
 FROM php:8.3-apache
 
 # Install system dependencies
@@ -22,41 +9,47 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     zip \
     unzip \
-    libzip-dev
+    libzip-dev \
+    librabbitmq-dev \
+    libssh-dev
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+RUN docker-php-ext-install \
+    pdo_mysql \
+    mbstring \
+    exif \
+    pcntl \
+    bcmath \
+    gd \
+    zip
+
+# Install AMQP extension - required for php-amqplib
+RUN pecl install amqp && \
+    docker-php-ext-enable amqp
+
+# Get latest Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Create Laravel project if it doesn't exist
-RUN if [ ! -d /var/www/html/app ]; then \
-    composer create-project --prefer-dist laravel/laravel . ; \
-    fi
+# Copy composer files first
+COPY composer.json composer.lock* ./
+
+# Install dependencies with memory limit disabled and ignore platform reqs
+ENV COMPOSER_MEMORY_LIMIT=-1
+RUN composer install --no-interaction --no-dev --optimize-autoloader --ignore-platform-reqs
 
 # Copy application files
-COPY . /var/www/html/
-
-# Copy vendor directory from composer stage
-COPY --from=composer /app/vendor /var/www/html/vendor
+COPY . .
 
 # Create storage directory if it doesn't exist
 RUN mkdir -p /var/www/html/storage/logs /var/www/html/storage/framework/sessions \
     /var/www/html/storage/framework/views /var/www/html/storage/framework/cache \
     /var/www/html/storage/app/public
-
-# Update .env with remote database settings
-RUN sed -i 's/DB_HOST=127.0.0.1/DB_HOST=${DB_HOST:-your_remote_db_host}/g' .env \
-    && sed -i 's/DB_DATABASE=laravel/DB_DATABASE=${DB_DATABASE:-your_database_name}/g' .env \
-    && sed -i 's/DB_USERNAME=root/DB_USERNAME=${DB_USERNAME:-your_database_user}/g' .env \
-    && sed -i 's/DB_PASSWORD=/DB_PASSWORD=${DB_PASSWORD:-your_database_password}/g' .env
-
-# Generate key if needed
-RUN php artisan key:generate --force
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html
@@ -74,6 +67,7 @@ RUN echo '<VirtualHost *:80>\n\
     ErrorLog ${APACHE_LOG_DIR}/error.log\n\
     CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
+
 
 ARG DB_REMOTE_HOST
 ARG DB_REMOTE_PORT
