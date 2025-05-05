@@ -1,4 +1,4 @@
-FROM php:8.4-apache
+FROM php:8.3-apache
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -27,8 +27,6 @@ WORKDIR /var/www/html
 RUN if [ ! -d /var/www/html/app ]; then \
     composer create-project --prefer-dist laravel/laravel . ; \
     fi
-
-
 
 COPY . /var/www/html/
 # COPY ./storage/cert/DigiCertGlobalRootCA.crt.pem /var/www/html/storage/cert/DigiCertGlobalRootCA.crt.pem
