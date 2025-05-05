@@ -1,3 +1,16 @@
+# Use a multi-stage build to separate dependency installation
+FROM composer:latest AS composer
+
+# Set working directory
+WORKDIR /app
+
+# Copy only the files needed for composer install
+COPY composer.json composer.lock* ./
+
+# Install dependencies with verbose output
+RUN composer install --no-interaction --no-dev --optimize-autoloader -v
+
+# Final image
 FROM php:8.3-apache
 
 # Install system dependencies
@@ -17,9 +30,6 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 # Install PHP extensions
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
-# Get latest Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
 # Set working directory
 WORKDIR /var/www/html
 
@@ -28,8 +38,11 @@ RUN if [ ! -d /var/www/html/app ]; then \
     composer create-project --prefer-dist laravel/laravel . ; \
     fi
 
+# Copy application files
 COPY . /var/www/html/
-# COPY ./storage/cert/DigiCertGlobalRootCA.crt.pem /var/www/html/storage/cert/DigiCertGlobalRootCA.crt.pem
+
+# Copy vendor directory from composer stage
+COPY --from=composer /app/vendor /var/www/html/vendor
 
 # Create storage directory if it doesn't exist
 RUN mkdir -p /var/www/html/storage/logs /var/www/html/storage/framework/sessions \
@@ -41,9 +54,6 @@ RUN sed -i 's/DB_HOST=127.0.0.1/DB_HOST=${DB_HOST:-your_remote_db_host}/g' .env 
     && sed -i 's/DB_DATABASE=laravel/DB_DATABASE=${DB_DATABASE:-your_database_name}/g' .env \
     && sed -i 's/DB_USERNAME=root/DB_USERNAME=${DB_USERNAME:-your_database_user}/g' .env \
     && sed -i 's/DB_PASSWORD=/DB_PASSWORD=${DB_PASSWORD:-your_database_password}/g' .env
-
-# Install dependencies
-RUN composer install --no-interaction --no-dev --optimize-autoloader
 
 # Generate key if needed
 RUN php artisan key:generate --force
@@ -114,7 +124,6 @@ ENV APP_ENV=$APP_ENV
 ENV APP_KEY=$APP_KEY
 ENV APP_DEBUG=$APP_DEBUG
 ENV APP_TIMEZONE=$APP_TIMEZONE
-ENV APP_TIMEZONE=$APP_TIMEZONE
 ENV APP_URL=$APP_URL
 ENV APP_LOCALE=$APP_LOCALE
 ENV APP_FALLBACK_LOCALE=$APP_FALLBACK_LOCALE
@@ -138,7 +147,6 @@ ENV QUEUE_CONNECTION=$QUEUE_CONNECTION
 ENV CACHE_STORE=$CACHE_STORE
 ENV CACHE_PREFIX=$CACHE_PREFIX
 ENV VITE_APP_NAME=$VITE_APP_NAME
-
 
 # Expose port 80
 EXPOSE 80
