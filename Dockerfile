@@ -4,8 +4,8 @@ FROM composer:latest AS composer_build
 # Set working directory
 WORKDIR /app
 
-# Copy composer files
-COPY composer.json composer.lock* ./
+# Copy all files
+COPY . .
 
 # Install dependencies with ignore-platform-reqs flag
 RUN composer install --no-interaction --no-dev --optimize-autoloader --ignore-platform-reqs
