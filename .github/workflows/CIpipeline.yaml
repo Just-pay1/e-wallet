@@ -58,6 +58,17 @@ jobs:
              --build-arg CACHE_PREFIX="${{ secrets.CACHE_PREFIX }}" \
              --build-arg VITE_APP_NAME="${{ secrets.VITE_APP_NAME }}" \
              --build-arg MYSQL_ATTR_SSL_CA="${{ secrets.MYSQL_ATTR_SSL_CA }}" \
+             --build-arg BILLING_SERVICE_URL="${{ secrets.BILLING_SERVICE_URL }}" \
+             --build-arg JUST_PAY_WALLET_ID="${{ secrets.JUST_PAY_WALLET_ID }}" \
+             --build-arg APP_REMOTE_URL="${{ secrets.APP_REMOTE_URL }}" \
+             --build-arg RABBITMQ_HOST="${{ secrets.RABBITMQ_HOST }}" \
+             --build-arg RABBITMQ_PORT="${{ secrets.RABBITMQ_PORT }}" \
+             --build-arg RABBITMQ_USER="${{ secrets.RABBITMQ_USER }}" \
+             --build-arg RABBITMQ_LOGIN="${{ secrets.RABBITMQ_LOGIN }}" \
+             --build-arg RABBITMQ_PASSWORD="${{ secrets.RABBITMQ_PASSWORD }}" \
+             --build-arg RABBITMQ_VHOST="${{ secrets.RABBITMQ_VHOST }}" \
+             --build-arg RABBITMQ_QUEUE="${{ secrets.RABBITMQ_QUEUE }}" \
+             --build-arg RABBITMQ_SSL="${{ secrets.RABBITMQ_SSL }}" \
              -t ewallet .
 
     - name: Tag Docker image
