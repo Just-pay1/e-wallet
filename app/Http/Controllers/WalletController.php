@@ -22,7 +22,7 @@ class WalletController extends Controller
         $user_id = $request['userId'];
         $wallet = Wallet::create([
             'user_id' => $user_id,
-            'balance' => 0.0,
+            'balance' => 500000.0,
             'currency' => 'EGP'
         ]);
 
