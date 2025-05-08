@@ -1,4 +1,17 @@
-FROM php:8.4-apache
+# First stage: Build dependencies
+FROM composer:latest AS composer_build
+
+# Set working directory
+WORKDIR /app
+
+# Copy all files
+COPY . .
+
+# Install dependencies with ignore-platform-reqs flag
+RUN composer install --no-interaction --no-dev --optimize-autoloader --ignore-platform-reqs
+
+# Second stage: Build application
+FROM php:8.3-apache
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -9,46 +22,43 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     zip \
     unzip \
-    libzip-dev
+    libzip-dev \
+    librabbitmq-dev \
+    libssh-dev  \
+    supervisor
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+RUN docker-php-ext-install \
+    pdo_mysql \
+    mbstring \
+    exif \
+    pcntl \
+    bcmath \
+    gd \
+    zip
 
-# Get latest Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Install AMQP extension
+RUN pecl install amqp && \
+    docker-php-ext-enable amqp
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Create Laravel project if it doesn't exist
-RUN if [ ! -d /var/www/html/app ]; then \
-    composer create-project --prefer-dist laravel/laravel . ; \
-    fi
+# Copy application files
+COPY . .
 
+# Copy vendor directory from the composer build stage
+COPY --from=composer_build /app/vendor /var/www/html/vendor
 
-
-COPY . /var/www/html/
-# COPY ./storage/cert/DigiCertGlobalRootCA.crt.pem /var/www/html/storage/cert/DigiCertGlobalRootCA.crt.pem
+COPY supervisord.conf /etc/supervisord.conf
 
 # Create storage directory if it doesn't exist
 RUN mkdir -p /var/www/html/storage/logs /var/www/html/storage/framework/sessions \
     /var/www/html/storage/framework/views /var/www/html/storage/framework/cache \
     /var/www/html/storage/app/public
-
-# Update .env with remote database settings
-RUN sed -i 's/DB_HOST=127.0.0.1/DB_HOST=${DB_HOST:-your_remote_db_host}/g' .env \
-    && sed -i 's/DB_DATABASE=laravel/DB_DATABASE=${DB_DATABASE:-your_database_name}/g' .env \
-    && sed -i 's/DB_USERNAME=root/DB_USERNAME=${DB_USERNAME:-your_database_user}/g' .env \
-    && sed -i 's/DB_PASSWORD=/DB_PASSWORD=${DB_PASSWORD:-your_database_password}/g' .env
-
-# Install dependencies
-RUN composer install --no-interaction --no-dev --optimize-autoloader
-
-# Generate key if needed
-RUN php artisan key:generate --force
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html
@@ -66,6 +76,8 @@ RUN echo '<VirtualHost *:80>\n\
     ErrorLog ${APACHE_LOG_DIR}/error.log\n\
     CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
+
+
 
 ARG DB_REMOTE_HOST
 ARG DB_REMOTE_PORT
@@ -103,6 +115,17 @@ ARG CACHE_PREFIX
 ARG VITE_APP_NAME
 ARG DB_CONNECTION
 ARG MYSQL_ATTR_SSL_CA
+ARG BILLING_SERVICE_URL
+ARG JUST_PAY_WALLET_ID
+ARG APP_REMOTE_URL
+ARG RABBITMQ_HOST
+ARG RABBITMQ_PORT
+ARG RABBITMQ_USER
+ARG RABBITMQ_LOGIN
+ARG RABBITMQ_PASSWORD
+ARG RABBITMQ_VHOST
+ARG RABBITMQ_QUEUE
+ARG RABBITMQ_SSL
 
 ENV MYSQL_ATTR_SSL_CA=$MYSQL_ATTR_SSL_CA
 ENV DB_CONNECTION=$DB_CONNECTION
@@ -115,7 +138,6 @@ ENV APP_NAME=$APP_NAME
 ENV APP_ENV=$APP_ENV
 ENV APP_KEY=$APP_KEY
 ENV APP_DEBUG=$APP_DEBUG
-ENV APP_TIMEZONE=$APP_TIMEZONE
 ENV APP_TIMEZONE=$APP_TIMEZONE
 ENV APP_URL=$APP_URL
 ENV APP_LOCALE=$APP_LOCALE
@@ -140,10 +162,19 @@ ENV QUEUE_CONNECTION=$QUEUE_CONNECTION
 ENV CACHE_STORE=$CACHE_STORE
 ENV CACHE_PREFIX=$CACHE_PREFIX
 ENV VITE_APP_NAME=$VITE_APP_NAME
-
+ENV BILLING_SERVICE_URL=$BILLING_SERVICE_URL
+ENV JUST_PAY_WALLET_ID=$JUST_PAY_WALLET_ID
+ENV RABBITMQ_HOST=$RABBITMQ_HOST
+ENV RABBITMQ_PORT=$RABBITMQ_PORT
+ENV RABBITMQ_USER=$RABBITMQ_USER
+ENV RABBITMQ_LOGIN=$RABBITMQ_LOGIN
+ENV RABBITMQ_PASSWORD=$RABBITMQ_PASSWORD
+ENV RABBITMQ_VHOST=$RABBITMQ_VHOST
+ENV RABBITMQ_QUEUE=$RABBITMQ_QUEUE
+ENV RABBITMQ_SSL=$RABBITMQ_SSL
 
 # Expose port 80
 EXPOSE 80
 
 # Start Apache service
-CMD ["apache2-foreground"]
+CMD ["supervisord", "-c", "/etc/supervisord.conf"]
