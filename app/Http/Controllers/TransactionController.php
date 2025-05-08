@@ -82,12 +82,14 @@ class TransactionController extends Controller
     {
         try {
             $user_id = $request->header('X-User-ID');
+            // typeofService
             $validate = $request->validate([
                 'bill_id' => 'required|string|min:1',
             ]);
-            $billId = $request->bill_id;
+            $bill_id = $request->bill_id;
             $billingServiceUrl = env('BILLING_SERVICE_URL');
-            $response = Http::get("{$billingServiceUrl}/bills/{$billId}");
+            
+            $response = Http::get("{$billingServiceUrl}/api/bills//bill-details/{$bill_id}");
 
             if ($response->failed()) {
                 return response()->json(['error' => 'Failed to fetch bill from billing service'], 502);

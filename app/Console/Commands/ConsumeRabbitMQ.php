@@ -26,7 +26,6 @@ class ConsumeRabbitMQ extends Command
 
     public function handle()
     {
-        $remote_url = env('APP_REMOTE_URL');
         // Load configuration from config/rabbitmq.php
         $config = config('rabbitmq');
 
@@ -56,18 +55,26 @@ class ConsumeRabbitMQ extends Command
         // Define message processing callback
         $callback = function (AMQPMessage $msg) {
             $this->info('Received: ' . $msg->body);
+        $remote_url = env('APP_REMOTE_URL');
 
             // Process the message
             $data = json_decode($msg->body, true);
             if (json_last_error() === JSON_ERROR_NONE) {
-                $response = Http::timeout(30)->post('{$remote_url}/api/wallet/wallet', [
+                $response = Http::timeout(30)->post("{$remote_url}/api/wallet/wallet", [
                     'userId' => $data['userId'],
                     'username' => $data['username'],
                 ]);
-                
+                if ($response->failed()) {
+                    // Handle HTTP errors (4xx, 5xx)
+                    Log::error('Wallet API request failed', [
+                        'status' => $response->status(),
+                        'response' => $response->body()
+                    ]);
+                }
                 // You can log the response to debug further
                 \Log::info('Wallet creation response', ['response' => $response->body()]);
                 
+
          
             } else {
                 $this->error('Invalid JSON message received.');
