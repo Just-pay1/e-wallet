@@ -24,7 +24,8 @@ RUN apt-get update && apt-get install -y \
     unzip \
     libzip-dev \
     librabbitmq-dev \
-    libssh-dev
+    libssh-dev  \
+    supervisor
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -51,6 +52,8 @@ COPY . .
 
 # Copy vendor directory from the composer build stage
 COPY --from=composer_build /app/vendor /var/www/html/vendor
+
+COPY supervisord.conf /etc/supervisord.conf
 
 # Create storage directory if it doesn't exist
 RUN mkdir -p /var/www/html/storage/logs /var/www/html/storage/framework/sessions \
@@ -174,4 +177,4 @@ ENV RABBITMQ_SSL=$RABBITMQ_SSL
 EXPOSE 80
 
 # Start Apache service
-CMD ["apache2-foreground"]
+CMD ["supervisord", "-c", "/etc/supervisord.conf"]
