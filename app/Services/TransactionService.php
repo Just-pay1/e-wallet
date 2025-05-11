@@ -26,8 +26,8 @@ class TransactionService
             $mainWallet = Wallet::where('id', env('JUST_PAY_WALLET_ID'))->firstOrFail(); 
 
             // Amounts
-            $netAmount = $billData['netAmount'];
-            $fees = $billData['fees'];
+            $netAmount = $billData['amount'];
+            $fees = $billData['fee'];
 
             // Check user balance
             if ($userWallet->balance < ($netAmount + $fees)) {
