@@ -55,7 +55,7 @@ class ConsumeRabbitMQ extends Command
         // Define message processing callback
         $callback = function (AMQPMessage $msg) {
             $this->info('Received: ' . $msg->body);
-        $remote_url = env('APP_REMOTE_URL');
+            $remote_url = app('config')->get('app.remote_url');
 
             // Process the message
             $data = json_decode($msg->body, true);

@@ -52,7 +52,8 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    'url' => env('APP_URL', 'http://localhost:8000'),
+    'remote_url' => env('APP_REMOTE_URL', 'https://e-wallet.azurewebsites.net'),
 
     /*
     |--------------------------------------------------------------------------
