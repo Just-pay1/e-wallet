@@ -92,15 +92,15 @@ class TransactionController extends Controller
             {
                 $billingServiceUrl = env('BILLING_SERVICE_URL');
                 
-                $response = Http::get("{$billingServiceUrl}/api/bills//bill-details/{$bill_id}");
+                $response = Http::get("{$billingServiceUrl}/api/bills/bill-details/{$bill_id}");
 
             }elseif($request->source == "source"){
 
                 $referenceServiceUrl = env('REFERENCE_SERVICE_URL');
                 
-                $response = Http::get("{$referenceServiceUrl}/api/bills//bill-details/{$bill_id}");
+                $response = Http::get("{$referenceServiceUrl}/api/bills/bill-details/{$bill_id}");
             }
-
+        
             if ($response->failed()) {
                 return response()->json(['error' => 'Failed to fetch bill from billing service'], 502);
             }elseif($response->status() == 500){
