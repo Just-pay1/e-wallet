@@ -103,6 +103,8 @@ class TransactionController extends Controller
 
             if ($response->failed()) {
                 return response()->json(['error' => 'Failed to fetch bill from billing service'], 502);
+            }elseif($response->status() == 500){
+                return response()->json(['error' => $response['error']], 500);
             }
 
             $billData = $response->json();
@@ -121,6 +123,27 @@ class TransactionController extends Controller
             }
 
             // send http request to billing service to change status
+            if($request->source == "billing"){
+                $billingServiceUrl = env('BILLING_SERVICE_URL');
+                $response = Http::post("{$billingServiceUrl}/api/bills/update-status/{$bill_id}", [
+                    'status' => 'paid'
+                ]);
+                if ($response->failed()) {
+                    return response()->json(['error' => 'Failed to update bill status'], 502);
+                }elseif($response->status() == 500){
+                    return response()->json(['error' => $response['error']], 500);
+                }
+            }elseif($request->source == "reference"){
+                $referenceServiceUrl = env('REFERENCE_SERVICE_URL');
+                $response = Http::post("{$referenceServiceUrl}/api/bills/update-status/{$bill_id}", [
+                    'status' => 'paid'
+                ]);
+                if ($response->failed()) {
+                    return response()->json(['error' => 'Failed to update bill status'], 502);
+                }elseif($response->status() == 500){
+                    return response()->json(['error' => $response['error']], 500);
+                }
+            }
 
             return response()->json([
                 "message" => "Your transaction was completed successfully.",
