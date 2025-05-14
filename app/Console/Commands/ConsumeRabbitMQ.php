@@ -62,7 +62,7 @@ class ConsumeRabbitMQ extends Command
             if (json_last_error() === JSON_ERROR_NONE) {
                 $response = Http::timeout(30)->post("{$remote_url}/api/wallet/wallet", [
                     'userId' => $data['userId'],
-                    'username' => $data['username'],
+
                 ]);
                 if ($response->failed()) {
                     // Handle HTTP errors (4xx, 5xx)
