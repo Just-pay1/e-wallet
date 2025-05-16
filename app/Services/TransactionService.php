@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Transaction;
 use App\Models\Wallet;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 
@@ -16,7 +17,7 @@ class TransactionService
      * @param string $userId
      * @return array
      */
-    public function pay(array $billData, string $userId): array
+    public function pay(array $billData, string $userId, string $source)
     {
         DB::beginTransaction();
         try {
@@ -61,6 +62,33 @@ class TransactionService
                 'type' => 'fee',
                 'description' => 'Payment fees',
             ]);
+            // return($billData);
+            if($source == "billing"){
+                
+                $billingServiceUrl = env('BILLING_SERVICE_URL');
+$response = Http::post("{$billingServiceUrl}/api/bills/update-bill-status", [
+                'bill_id' => $billData['bill_id'],   
+                    'user_id' => $userId,
+                    'paid_amount' => $netAmount,
+                ]);
+
+                if ($response->failed()) {
+                    return ['success' => false, 'message' => 'Failed to update bill status'];
+                }elseif($response->status() == 500){
+                    return ['success' => false, 'message' => $response['error']];
+                }
+            }elseif($source == "reference"){
+                $referenceServiceUrl = env('REFERENCE_SERVICE_URL');
+                $response = Http::post("{$referenceServiceUrl}/api/bills/update-status", [
+                    'bill_id' => $billData['id'],
+                    'user_id' => $userId,
+                ]);
+                if ($response->failed()) {
+                    return ['success' => false, 'message' => 'Failed to update bill status'];
+                }elseif($response->status() == 500){
+                    return ['success' => false, 'message' => $response['error']];
+                }
+            }
 
             DB::commit();
             return [

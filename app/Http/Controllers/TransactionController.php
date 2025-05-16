@@ -92,7 +92,7 @@ class TransactionController extends Controller
             {
                 $billingServiceUrl = env('BILLING_SERVICE_URL');
                 
-                $response = Http::get("{$billingServiceUrl}/api/bills/bill-details/{$bill_id}");
+                $response = Http::get("{$billingServiceUrl}/api/bills/bill-details?bill_id={$bill_id}");
 
             }elseif($request->source == "source"){
 
@@ -106,44 +106,25 @@ class TransactionController extends Controller
             }elseif($response->status() == 500){
                 return response()->json(['error' => $response['error']], 500);
             }
+           
+            $billData = $response->json()['data'];  
 
-            $billData = $response->json();
             $existingUserWallet = $this->walletService->userHasWallet($user_id);
             $existingMerchantWallet = $this->walletService->userHasWallet($billData['merchant_id']);
             if(!$existingUserWallet || !$existingMerchantWallet){
                 return response()->json(['error' => 'User or merchant wallet not found'], 404);
             }
-            
             // fraud detection
             
-            $transactionResponse = $this->TransactionService->pay($billData, $user_id);
+            $transactionResponse = $this->TransactionService->pay($billData, $user_id, $request->source);
+   
             if ($transactionResponse['success'] == false)
             {
                 return response()->json(['error'=> $transactionResponse['message']], 400);
             }
 
             // send http request to billing service to change status
-            if($request->source == "billing"){
-                $billingServiceUrl = env('BILLING_SERVICE_URL');
-                $response = Http::post("{$billingServiceUrl}/api/bills/update-status/{$bill_id}", [
-                    'status' => 'paid'
-                ]);
-                if ($response->failed()) {
-                    return response()->json(['error' => 'Failed to update bill status'], 502);
-                }elseif($response->status() == 500){
-                    return response()->json(['error' => $response['error']], 500);
-                }
-            }elseif($request->source == "reference"){
-                $referenceServiceUrl = env('REFERENCE_SERVICE_URL');
-                $response = Http::post("{$referenceServiceUrl}/api/bills/update-status/{$bill_id}", [
-                    'status' => 'paid'
-                ]);
-                if ($response->failed()) {
-                    return response()->json(['error' => 'Failed to update bill status'], 502);
-                }elseif($response->status() == 500){
-                    return response()->json(['error' => $response['error']], 500);
-                }
-            }
+           
 
             return response()->json([
                 "message" => "Your transaction was completed successfully.",
