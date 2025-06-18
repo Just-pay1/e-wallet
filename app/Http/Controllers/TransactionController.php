@@ -94,15 +94,15 @@ class TransactionController extends Controller
                 
                 $response = Http::get("{$billingServiceUrl}/api/bills/bill-details?bill_id={$bill_id}");
 
-            }elseif($request->source == "source"){
+            }elseif($request->source == "reference"){
 
                 $referenceServiceUrl = env('REFERENCE_SERVICE_URL');
                 
-                $response = Http::get("{$referenceServiceUrl}/api/bills/bill-details/{$bill_id}");
+                $response = Http::get("{$referenceServiceUrl}/api/billing/{$bill_id}");
             }
         
             if ($response->failed()) {
-                return response()->json(['error' => 'Failed to fetch bill from billing service'], 502);
+                return response()->json(['error' => "Failed to fetch bill from {$request->source} service"], 502);
             }elseif($response->status() == 500){
                 return response()->json(['error' => $response['error']], 500);
             }
@@ -116,7 +116,7 @@ class TransactionController extends Controller
             }
             // fraud detection
             
-            $transactionResponse = $this->TransactionService->pay($billData, $user_id, $request->source);
+        $transactionResponse = $this->TransactionService->pay($billData, $user_id, $validate['source'], $validate['bill_id']);
    
             if ($transactionResponse['success'] == false)
             {
@@ -127,7 +127,7 @@ class TransactionController extends Controller
            
 
             return response()->json([
-                "message" => "Your transaction was completed successfully.",
+                "message" => "Your transaction Has been completed successfully.",
                 "merchant_transaction" => $transactionResponse['merchant_transaction'],
                 "fee_transaction" => $transactionResponse['fee_transaction']
             ], 200);

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Transaction;
 use App\Models\Wallet;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 
@@ -17,7 +18,7 @@ class TransactionService
      * @param string $userId
      * @return array
      */
-    public function pay(array $billData, string $userId, string $source)
+    public function pay(array $billData, string $userId, string $source, string $billId)
     {
         DB::beginTransaction();
         try {
@@ -66,8 +67,8 @@ class TransactionService
             if($source == "billing"){
                 
                 $billingServiceUrl = env('BILLING_SERVICE_URL');
-$response = Http::post("{$billingServiceUrl}/api/bills/update-bill-status", [
-                'bill_id' => $billData['bill_id'],   
+                $response = Http::post("{$billingServiceUrl}/api/bills/update-bill-status", [
+                    'bill_id' => $billId,   
                     'user_id' => $userId,
                     'paid_amount' => $netAmount,
                 ]);
@@ -79,8 +80,8 @@ $response = Http::post("{$billingServiceUrl}/api/bills/update-bill-status", [
                 }
             }elseif($source == "reference"){
                 $referenceServiceUrl = env('REFERENCE_SERVICE_URL');
-                $response = Http::post("{$referenceServiceUrl}/api/bills/update-status", [
-                    'bill_id' => $billData['id'],
+                $response = Http::post("{$referenceServiceUrl}/api/billing/pay", [
+                    'Reference_Number' => $billId,
                     'user_id' => $userId,
                 ]);
                 if ($response->failed()) {
@@ -98,6 +99,7 @@ $response = Http::post("{$billingServiceUrl}/api/bills/update-bill-status", [
             ];
         } catch (\Exception $e) {
             DB::rollBack();
+        Log::error($e->getMessage());
             return ['success' => false, 'message' => $e->getMessage()];
         }
     }

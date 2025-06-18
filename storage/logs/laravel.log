@@ -17456,3 +17456,4 @@ https://github.com/highlightjs/highlight.js/issues/2277`),W=p,N=y),C===void 0&&(
 #25 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php(23): require_once('D:\\\\just-pay\\\\e-w...')
 #26 {main}
 "} 
+[2025-06-18 13:11:44] local.ERROR: Undefined array key "fee"  
