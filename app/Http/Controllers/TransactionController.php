@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\TransactionResource;
 use App\Models\Transaction;
 use App\Models\Wallet;
 use App\Services\TransactionService;
@@ -126,10 +127,17 @@ class TransactionController extends Controller
             // send http request to billing service to change status
            
 
+        // return response()->json([
+        // "message" => "Your transaction Has been completed successfully.",
+        //     "merchant_transaction" => $transactionResponse['merchant_transaction'],
+        //     "fee_transaction" => $transactionResponse['fee_transaction']
+        // ], 200);
+       
             return response()->json([
-                "message" => "Your transaction Has been completed successfully.",
-                "merchant_transaction" => $transactionResponse['merchant_transaction'],
-                "fee_transaction" => $transactionResponse['fee_transaction']
+                'model' => new TransactionResource($transactionResponse),
+                'success' => true,
+                'message' => "Your transaction Has been completed successfully.",
+              
             ], 200);
             
 
