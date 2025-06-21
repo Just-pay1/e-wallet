@@ -8,10 +8,13 @@ use App\Models\Wallet;
 use App\Services\TransactionService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Http;
 use App\Services\WalletService;
+use Illuminate\Support\Facades\Log;
+
 class TransactionController extends Controller
 {
     protected $walletService;
@@ -82,68 +85,20 @@ class TransactionController extends Controller
     public function pay(Request $request)
     {
         try {
-            $user_id = $request->header('X-User-ID');
-            // typeofService
-            $validate = $request->validate([
-                'bill_id' => 'required|string|min:1',
-                'source' => 'required|string|in:billing,reference'
-            ]);
-            $bill_id = $request->bill_id;
-            if ($request->source == "billing")
-            {
-                $billingServiceUrl = env('BILLING_SERVICE_URL');
-                
-                $response = Http::get("{$billingServiceUrl}/api/bills/bill-details?bill_id={$bill_id}");
+            $transactionResponse = $this->TransactionService->pay($request);
 
-            }elseif($request->source == "reference"){
-
-                $referenceServiceUrl = env('REFERENCE_SERVICE_URL');
-                
-                $response = Http::get("{$referenceServiceUrl}/api/billing/{$bill_id}");
-            }
-        
-            if ($response->failed()) {
-                return response()->json(['error' => "Failed to fetch bill from {$request->source} service"], 502);
-            }elseif($response->status() == 500){
-                return response()->json(['error' => $response['error']], 500);
-            }
-           
-            $billData = $response->json()['data'];  
-
-            $existingUserWallet = $this->walletService->userHasWallet($user_id);
-            $existingMerchantWallet = $this->walletService->userHasWallet($billData['merchant_id']);
-            if(!$existingUserWallet || !$existingMerchantWallet){
-                return response()->json(['error' => 'User or merchant wallet not found'], 404);
-            }
-            // fraud detection
-            
-        $transactionResponse = $this->TransactionService->pay($billData, $user_id, $validate['source'], $validate['bill_id']);
-   
-            if ($transactionResponse['success'] == false)
-            {
-                return response()->json(['error'=> $transactionResponse['message']], 400);
+            if ($transactionResponse['success'] === false) {
+                return response()->json(['error' => $transactionResponse['message']], $transactionResponse['status_code'] ?? 400);
             }
 
-            // send http request to billing service to change status
-           
-
-        // return response()->json([
-        // "message" => "Your transaction Has been completed successfully.",
-        //     "merchant_transaction" => $transactionResponse['merchant_transaction'],
-        //     "fee_transaction" => $transactionResponse['fee_transaction']
-        // ], 200);
-       
             return response()->json([
                 'model' => new TransactionResource($transactionResponse),
                 'success' => true,
-                'message' => "Your transaction Has been completed successfully.",
-              
+                'message' => 'Your transaction Has been completed successfully.',
             ], 200);
-            
-
-     
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Exception occurred while contacting billing service', 'details' => $e->getMessage()], 500);
+            Log::error('An unexpected error occurred in TransactionController@pay', ['details' => $e->getMessage()]);
+            return response()->json(['error' => 'An unexpected error occurred.', 'details' => $e->getMessage()], 500);
         }
     }
 }

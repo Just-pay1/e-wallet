@@ -22,6 +22,7 @@ class TransactionResource extends JsonResource
             'id' => $merchantTransaction->id,
             'amount' => $merchantTransaction->amount,
             'fee' => $feeTransaction->amount,
+            'total' => $merchantTransaction->amount + $feeTransaction->amount,
             'date' => $merchantTransaction->created_at->toDateString(),
             'time' => $merchantTransaction->created_at->toTimeString(),
         ];
