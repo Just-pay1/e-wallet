@@ -72,6 +72,7 @@ jobs:
              --build-arg REFERENCE_SERVICE_URL="${{ secrets.REFERENCE_SERVICE_URL }}" \
              --build-arg FRAUD_SERVICE_URL="${{ secrets.FRAUD_SERVICE_URL }}" \
              --build-arg API_GATEWAY_URL="${{ secrets.API_GATEWAY_URL }}" \
+             --build-arg TRANSACTION_SECRET_KEY="${{ secrets.TRANSACTION_SECRET_KEY }}" \
              -t ewallet .
 
     - name: Tag Docker image
