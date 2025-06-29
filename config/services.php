@@ -34,5 +34,7 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'transaction_secret_key' => env('TRANSACTION_SECRET_KEY'),
+    'JUST_PAY_WALLET_ID' => env('JUST_PAY_WALLET_ID'),
 
 ];

@@ -17457,3 +17457,64 @@ https://github.com/highlightjs/highlight.js/issues/2277`),W=p,N=y),C===void 0&&(
 #26 {main}
 "} 
 [2025-06-18 13:11:44] local.ERROR: Undefined array key "fee"  
+[2025-06-23 16:39:03] local.ERROR: Maximum execution time of 60 seconds exceeded {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Maximum execution time of 60 seconds exceeded at D:\\just-pay\\e-wallet\\vendor\\guzzlehttp\\guzzle\\src\\Handler\\CurlMultiHandler.php:169)
+[stacktrace]
+#0 {main}
+"} 
+[2025-06-23 16:40:49] local.ERROR: Fraud detection service failed {"response":"<div style=\"display: block; margin: auto;  width: 600px; height: 500px; text-align: center; font-family: 'Courier', cursive, sans-serif;\"><h1 style=\"color: 747474\">:( Application Error</h1><p style=\"color:#666\">If you are the application administrator, you can access the <a style=\"color: grey\"href=\"https://customer-chatbot-f4gxejfbana5hwfc.scm.uaenorth-01.azurewebsites.net/detectors\">diagnostic resources</a>.</div>
+"} 
+[2025-06-23 16:45:21] local.ERROR: Fraud detection service failed {"response":"<div style=\"display: block; margin: auto;  width: 600px; height: 500px; text-align: center; font-family: 'Courier', cursive, sans-serif;\"><h1 style=\"color: 747474\">:( Application Error</h1><p style=\"color:#666\">If you are the application administrator, you can access the <a style=\"color: grey\"href=\"https://fraud-detection-app-evabfpebcyazfjeh.scm.uaenorth-01.azurewebsites.net/detectors\">diagnostic resources</a>.</div>
+"} 
+[2025-06-23 16:46:50] local.ERROR: Fraud detection service failed {"response":"<div style=\"display: block; margin: auto;  width: 600px; height: 500px; text-align: center; font-family: 'Courier', cursive, sans-serif;\"><h1 style=\"color: 747474\">:( Application Error</h1><p style=\"color:#666\">If you are the application administrator, you can access the <a style=\"color: grey\"href=\"https://fraud-detection-app-evabfpebcyazfjeh.scm.uaenorth-01.azurewebsites.net/detectors\">diagnostic resources</a>.</div>
+"} 
+[2025-06-23 16:56:04] local.ERROR: Fraud detection service failed {"response":"<!DOCTYPE html><html><head><title>Web App - Unavailable</title><style type=\"text/css\">html{height:100%;width:100%;}#feature{width:960px;margin:95px auto 0 auto;overflow:auto;}#content{font-family:\"Segoe UI\";font-weight:normal;font-size:22px;color:#fff;float:left;width:460px;margin-top:68px;margin-left:0px;vertical-align:middle;}#content h1{font-family:\"Segoe UI Light\";color:#fff;font-weight:normal;font-size:60px;line-height:48pt;width:800px;}p a,p a:visited,p a:active,p a:hover{color:#fff;}</style></head><body bgcolor=\"#00abec\"><div id=\"feature\"><div id=\"content\"><h1 id=\"unavailable\">Error 403 - This web app is stopped.</h1><p id=\"tryAgain\">The web app you have attempted to reach is currently stopped and does not accept any requests. Please try to reload the page or visit it again soon.</p><p id=\"toAdmin\">If you are the web app administrator, please find the common 403 error scenarios and resolution <a href=\"https://go.microsoft.com/fwlink/?linkid=2095007\" target=\"_blank\">here</a>. For further troubleshooting tools and recommendations, please visit <a href=\"https://portal.azure.com/\">Azure Portal</a>.</p></div></div></body></html>"} 
+[2025-06-23 17:02:02] local.ERROR: Fraud detection service failed {"response":"<div style=\"display: block; margin: auto;  width: 600px; height: 500px; text-align: center; font-family: 'Courier', cursive, sans-serif;\"><h1 style=\"color: 747474\">:( Application Error</h1><p style=\"color:#666\">If you are the application administrator, you can access the <a style=\"color: grey\"href=\"https://fraud-detection-app-evabfpebcyazfjeh.scm.uaenorth-01.azurewebsites.net/detectors\">diagnostic resources</a>.</div>
+"} 
+[2025-06-23 22:49:06] local.ERROR: Fraud detection service failed {"response":"{\"error\":\"0\",\"status\":\"failed\"}
+"} 
+[2025-06-23 22:58:17] local.ERROR: Fraud detection service failed {"response":"{\"error\":\"0\",\"status\":\"failed\"}
+"} 
+[2025-06-23 23:11:44] local.ERROR: Fraud detection service failed {"response":"{\"error\":\"0\",\"status\":\"failed\"}
+"} 
+[2025-06-29 04:07:51] local.ERROR: SQLSTATE[HY000]: General error: 1364 Field 'description' doesn't have a default value (Connection: remote_db, SQL: insert into `transactions` (`id`, `debit_from`, `credit_to`, `amount`, `type`, `updated_at`, `created_at`) values (4596563462, 2871415415, 9099927788, 0.1, fee, 2025-06-29 04:07:50, 2025-06-29 04:07:50))  
+[2025-06-29 04:09:27] local.ERROR: Undefined array key "merchant_transaction" {"exception":"[object] (ErrorException(code: 0): Undefined array key \"merchant_transaction\" at D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Resources\\DelegatesToResource.php:83)
+[stacktrace]
+#0 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(256): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleError(2, 'Undefined array...', 'D:\\\\just-pay\\\\e-w...', 83)
+#1 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Resources\\DelegatesToResource.php(83): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(2, 'Undefined array...', 'D:\\\\just-pay\\\\e-w...', 83)
+#2 D:\\just-pay\\e-wallet\\app\\Http\\Resources\\TransactionResource.php(17): Illuminate\\Http\\Resources\\Json\\JsonResource->offsetGet('merchant_transa...')
+#3 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Resources\\Json\\JsonResource.php(108): App\\Http\\Resources\\TransactionResource->toArray(Object(Illuminate\\Http\\Request))
+#4 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Resources\\Json\\JsonResource.php(255): Illuminate\\Http\\Resources\\Json\\JsonResource->resolve(Object(Illuminate\\Http\\Request))
+#5 [internal function]: Illuminate\\Http\\Resources\\Json\\JsonResource->jsonSerialize()
+#6 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\JsonResponse.php(86): json_encode(Array, 0)
+#7 D:\\just-pay\\e-wallet\\vendor\\symfony\\http-foundation\\JsonResponse.php(49): Illuminate\\Http\\JsonResponse->setData(Array)
+#8 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\JsonResponse.php(32): Symfony\\Component\\HttpFoundation\\JsonResponse->__construct(Array, 200, Array, false)
+#9 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\ResponseFactory.php(104): Illuminate\\Http\\JsonResponse->__construct(Array, 200, Array, 0)
+#10 D:\\just-pay\\e-wallet\\app\\Http\\Controllers\\TransactionController.php(114): Illuminate\\Routing\\ResponseFactory->json(Array, 200)
+#11 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Controller.php(54): App\\Http\\Controllers\\TransactionController->sendMoney(Object(App\\Http\\Requests\\SendMoneyRequest))
+#12 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\ControllerDispatcher.php(44): Illuminate\\Routing\\Controller->callAction('sendMoney', Array)
+#13 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(266): Illuminate\\Routing\\ControllerDispatcher->dispatch(Object(Illuminate\\Routing\\Route), Object(App\\Http\\Controllers\\TransactionController), 'sendMoney')
+#14 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(212): Illuminate\\Routing\\Route->runController()
+#15 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(808): Illuminate\\Routing\\Route->run()
+#16 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(170): Illuminate\\Routing\\Router->Illuminate\\Routing\\{closure}(Object(Illuminate\\Http\\Request))
+#17 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Middleware\\SubstituteBindings.php(51): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#18 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Routing\\Middleware\\SubstituteBindings->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#19 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Middleware\\ThrottleRequests.php(161): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#20 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Middleware\\ThrottleRequests.php(92): Illuminate\\Routing\\Middleware\\ThrottleRequests->handleRequest(Object(Illuminate\\Http\\Request), Object(Closure), Array)
+#21 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Routing\\Middleware\\ThrottleRequests->handle(Object(Illuminate\\Http\\Request), Object(Closure), '60', '1')
+#22 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(127): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#23 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(807): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#24 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(786): Illuminate\\Routing\\Router->runRouteWithinStack(Object(Illuminate\\Routing\\Route), Object(Illuminate\\Http\\Request))
+#25 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(750): Illuminate\\Routing\\Router->runRoute(Object(Illuminate\\Http\\Request), Object(Illuminate\\Routing\\Route))
+#26 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(739): Illuminate\\Routing\\Router->dispatchToRoute(Object(Illuminate\\Http\\Request))
+#27 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(201): Illuminate\\Routing\\Router->dispatch(Object(Illuminate\\Http\\Request))
+#28 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(170): Illuminate\\Foundation\\Http\\Kernel->Illuminate\\Foundation\\Http\\{closure}(Object(Illuminate\\Http\\Request))
+#29 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\TrustProxies.php(58): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#30 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Http\\Middleware\\TrustProxies->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#31 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(127): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#32 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(176): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#33 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(145): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter(Object(Illuminate\\Http\\Request))
+#34 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1220): Illuminate\\Foundation\\Http\\Kernel->handle(Object(Illuminate\\Http\\Request))
+#35 D:\\just-pay\\e-wallet\\public\\index.php(17): Illuminate\\Foundation\\Application->handleRequest(Object(Illuminate\\Http\\Request))
+#36 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php(23): require_once('D:\\\\just-pay\\\\e-w...')
+#37 {main}
+"} 

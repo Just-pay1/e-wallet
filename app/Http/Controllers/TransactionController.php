@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PayRequest;
+use App\Http\Requests\SendMoneyRequest;
+use App\Http\Resources\SendMoneyResource;
 use App\Http\Resources\TransactionResource;
 use App\Models\Transaction;
 use App\Models\Wallet;
@@ -82,7 +85,7 @@ class TransactionController extends Controller
         return response()->json($transactions);
     }
 
-    public function pay(Request $request)
+    public function pay(PayRequest $request)
     {
         try {
             $transactionResponse = $this->TransactionService->pay($request);
@@ -100,5 +103,30 @@ class TransactionController extends Controller
             Log::error('An unexpected error occurred in TransactionController@pay', ['details' => $e->getMessage()]);
             return response()->json(['error' => 'An unexpected error occurred.', 'details' => $e->getMessage()], 500);
         }
+    }
+
+    public function sendMoney(SendMoneyRequest $request)
+    {
+        $transactionResponse = $this->TransactionService->sendMoney($request);
+        if ($transactionResponse['success'] === false) {
+            return response()->json(['error' => $transactionResponse['message']], $transactionResponse['status_code'] ?? 400);
+        }
+
+        return response()->json([
+            'model' => new SendMoneyResource($transactionResponse),
+            'success' => true,
+            'message' => 'Your transaction Has been completed successfully.',
+        ], 200);
+    }
+
+    public function calFees(float $amount)
+    {
+        $result = $this->TransactionService->calFees($amount);
+   
+        return response()->json([
+            'fees' => $result,
+            'success' => true,
+            'message' => 'Fees calculated successfully.',
+        ], 200);
     }
 }

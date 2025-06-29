@@ -16,6 +16,8 @@ Route::prefix('/transaction')->group(function () {
     Route::post('/transfer', [TransactionController::class, 'transfer']);
     Route::get('/history', [TransactionController::class, 'history']);
     Route::post('/pay', [TransactionController::class, 'pay']);
+    Route::post('/send-money', [TransactionController::class, 'sendMoney']);
+    Route::get('/cal-fees/{amount}', [TransactionController::class, 'calFees']);
  
 });
 
