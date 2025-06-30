@@ -36,5 +36,9 @@ return [
     ],
     'transaction_secret_key' => env('TRANSACTION_SECRET_KEY'),
     'JUST_PAY_WALLET_ID' => env('JUST_PAY_WALLET_ID'),
+    'BILLING_SERVICE_URL' => env('BILLING_SERVICE_URL'),
+    'REFERENCE_SERVICE_URL' => env('REFERENCE_SERVICE_URL'),
+    'FRAUD_DETECTION_SERVICE_URL' => env('FRAUD_DETECTION_SERVICE_URL'),
+    'API_GATEWAY_URL' => env('API_GATEWAY_URL'),
 
 ];

@@ -32,7 +32,7 @@ class TransactionService
         }
 
         // --- Signature, Timestamp, and Nonce Validation ---
-        $secretKey = env('TRANSACTION_SECRET_KEY', 'SECRET123');
+        $secretKey = config('services.transaction_secret_key');
         $signature = $request->input('signature');
         $timestamp = $request->input('timestamp');
         $nonce = $request->input('nonce');
@@ -45,34 +45,21 @@ class TransactionService
         $expectedSignature = $this->generateSignature($bill_id, $timestamp, $nonce, $secretKey);
 
         if (!hash_equals($expectedSignature, $signature)) {
-            return ['success' => false, 'message' => 'Invalid signature', 'status_code' => 400];
+            return ['success' => false, 'message' => 'Invalid signature', 'status_code' => 500];
         }
 
         $reqTime = strtotime($timestamp);
         if (!$reqTime || abs(time() - $reqTime) > 300) {
-            return ['success' => false, 'message' => 'Timestamp out of range', 'status_code' => 400];
+            return ['success' => false, 'message' => 'Timestamp out of range', 'status_code' => 500];
         }
 
         if ($this->isNonceUsed($nonce)) {
-            return ['success' => false, 'message' => 'Nonce already used', 'status_code' => 400];
+            return ['success' => false, 'message' => 'Nonce already used', 'status_code' => 500];
         }
         $this->markNonceUsed($nonce);
         // --- End Signature, Timestamp, and Nonce Validation ---
 
-        // $validator = Validator::make($request->all(), [
-        //     'bill_id' => 'required|string|min:1',
-        //     'source' => 'required|string|in:billing,reference',
-        //     'category' => 'required|string',
-        //     'lat' => 'required|numeric',
-        //     'long' => 'required|numeric',
-        //     'signature' => 'required|string',
-        //     'timestamp' => 'required|string',
-        //     'nonce' => 'required|string',
-        // ]);
 
-        // if ($validator->fails()) {
-        //     return ['success' => false, 'message' => $validator->errors()->first(), 'status_code' => 422];
-        // }
 
         $validated = $request->validated();
         $bill_id = $validated['bill_id'];
@@ -83,6 +70,7 @@ class TransactionService
             $billPromise = Http::async()->get("{$billingServiceUrl}/api/bills/bill-details?bill_id={$bill_id}");
         } else {
             $referenceServiceUrl = env('REFERENCE_SERVICE_URL');
+    dd($referenceServiceUrl);
             $billPromise = Http::async()->get("{$referenceServiceUrl}/api/billing/{$bill_id}");
         }
         
@@ -161,16 +149,13 @@ class TransactionService
                     if ($fraudResponse->failed()) {
                         Log::error('Fraud detection service failed', ['response' => $fraudResponse->body()]);
                         DB::rollBack();
-                    dd(['response' => $fraudResponse->body()]);
-                        return ['success' => false, 'message' => 'Transaction blocked by fraud detection service.'];
+                        return ['success' => false, 'message' => 'Transaction blocked by fraud detection service.', 'status_code' => 500];
                     } elseif (isset($fraudResponse->json()['status']) && $fraudResponse->json()['status'] !== 'success') {
                         DB::rollBack();
-                        dd('2');
-                        return ['success' => false, 'message' => 'Transaction blocked by fraud detection service.'];
+                        return ['success' => false, 'message' => 'Transaction blocked by fraud detection service.', 'status_code' => 500];
                     } elseif (isset($fraudResponse->json()['fraud_probability']) && $fraudResponse->json()['fraud_probability'] > 50) {
                         DB::rollBack();
-                        dd('3');
-                        return ['success' => false, 'message' => 'Transaction blocked by fraud detection service.'];
+                        return ['success' => false, 'message' => 'Transaction blocked by fraud detection service.', 'status_code' => 500];
                     }
                 } catch (\Exception $e) {
                     Log::error('Could not contact fraud detection service', ['details' => $e->getMessage()]);
@@ -187,7 +172,7 @@ class TransactionService
 
                 if ($response->failed()) {
                     DB::rollBack();
-                    return ['success' => false, 'message' => 'Failed to update bill status'];
+                    return ['success' => false, 'message' => 'Failed to update bill status', 'status_code' => 500];
                 }
             } else {
                 $referenceServiceUrl = env('REFERENCE_SERVICE_URL');
@@ -197,7 +182,7 @@ class TransactionService
                 ]);
                 if ($response->failed()) {
                     DB::rollBack();
-                    return ['success' => false, 'message' => 'Failed to update bill status'];
+                    return ['success' => false, 'message' => 'Failed to update bill status', 'status_code' => 500];
                 }
             }
 
@@ -210,7 +195,7 @@ class TransactionService
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error($e->getMessage());
-            return ['success' => false, 'message' => $e->getMessage()];
+            return ['success' => false, 'message' => $e->getMessage(), 'status_code' => 500];
         }
     }
 
