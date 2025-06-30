@@ -17673,3 +17673,9 @@ https://github.com/highlightjs/highlight.js/issues/2277`),W=p,N=y),C===void 0&&(
 #26 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php(23): require_once('D:\\\\just-pay\\\\e-w...')
 #27 {main}
 "} 
+[2025-06-30 05:50:33] local.ERROR: cURL error 6: Could not resolve host: api (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for api/billing/pay  
+[2025-06-30 05:52:35] local.ERROR: cURL error 6: Could not resolve host: api (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for api/billing/pay  
+[2025-06-30 05:54:00] local.ERROR: cURL error 6: Could not resolve host: api (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for api/billing/pay  
+[2025-06-30 05:57:36] local.ERROR: cURL error 6: Could not resolve host: api (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for api/billing/pay  
+[2025-06-30 05:58:37] local.ERROR: cURL error 6: Could not resolve host: api (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for api/billing/pay  
+[2025-06-30 05:59:14] local.ERROR: cURL error 6: Could not resolve host: api (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for api/billing/pay  

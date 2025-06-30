@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
         {
-            Schema::create('transcations', function (Blueprint $table) {
+            Schema::create('transactions', function (Blueprint $table) {
                 $table->string('id', 10)->primary(); // 10-digit NanoID as primary key
                 $table->string('debit_from', 10);
                 $table->foreign('debit_from')->references('id')->on('wallets');

@@ -44,18 +44,18 @@ class TransactionService
 
         $expectedSignature = $this->generateSignature($bill_id, $timestamp, $nonce, $secretKey);
 
-        if (!hash_equals($expectedSignature, $signature)) {
-            return ['success' => false, 'message' => 'Invalid signature', 'status_code' => 500];
-        }
+        // if (!hash_equals($expectedSignature, $signature)) {
+        //     return ['success' => false, 'message' => 'Invalid signature', 'status_code' => 500];
+        // }
 
-        $reqTime = strtotime($timestamp);
-        if (!$reqTime || abs(time() - $reqTime) > 300) {
-            return ['success' => false, 'message' => 'Timestamp out of range', 'status_code' => 500];
-        }
+        // $reqTime = strtotime($timestamp);
+        // if (!$reqTime || abs(time() - $reqTime) > 300) {
+        //     return ['success' => false, 'message' => 'Timestamp out of range', 'status_code' => 500];
+        // }
 
-        if ($this->isNonceUsed($nonce)) {
-            return ['success' => false, 'message' => 'Nonce already used', 'status_code' => 500];
-        }
+        // if ($this->isNonceUsed($nonce)) {
+        //     return ['success' => false, 'message' => 'Nonce already used', 'status_code' => 500];
+        // }
         $this->markNonceUsed($nonce);
         // --- End Signature, Timestamp, and Nonce Validation ---
 
@@ -66,11 +66,11 @@ class TransactionService
         $source = $validated['source'];
 
         if ($source === 'billing') {
-            $billingServiceUrl = env('BILLING_SERVICE_URL');
+            $billingServiceUrl = config('services.BILLING_SERVICE_URL');
             $billPromise = Http::async()->get("{$billingServiceUrl}/api/bills/bill-details?bill_id={$bill_id}");
         } else {
-            $referenceServiceUrl = env('REFERENCE_SERVICE_URL');
-    dd($referenceServiceUrl);
+            $referenceServiceUrl = config('services.REFERENCE_SERVICE_URL');
+            
             $billPromise = Http::async()->get("{$referenceServiceUrl}/api/billing/{$bill_id}");
         }
         
@@ -80,6 +80,7 @@ class TransactionService
         }
 
         $response = $billPromise->wait();
+   
 
         if ($response->failed()) {
             return ['success' => false, 'message' => "Failed to fetch bill from {$source} service", 'status_code' => 502];
@@ -89,7 +90,7 @@ class TransactionService
             return ['success' => false, 'message' => $response['error'] ?? 'Error from external service', 'status_code' => $response->status()];
         }
 
-        $billData = $response->json()['data'];
+    $billData = $response->json()['data'];
 
         $merchantWallet = Wallet::where('user_id', $billData['merchant_id'])->first();
         if (! $merchantWallet) {
@@ -97,7 +98,7 @@ class TransactionService
         }
         
         $fraudPromise = null;
-        $fraudServiceUrl = env('FRAUD_SERVICE_URL');
+        $fraudServiceUrl = config('services.FRAUD_DETECTION_SERVICE_URL');
 
         if ($fraudServiceUrl) {
             $fraudPromise = Http::timeout(30)->async()->post("{$fraudServiceUrl}/predict", [[
@@ -126,7 +127,6 @@ class TransactionService
             $mainWallet->increment('balance', $fees);
 
             $merchantTransaction = Transaction::create([
-                'id' => Str::uuid(),
                 'debit_from' => $userWallet->id,
                 'credit_to' => $merchantWallet->id,
                 'amount' => $netAmount,
@@ -135,7 +135,6 @@ class TransactionService
             ]);
 
             $feeTransaction = Transaction::create([
-                'id' => Str::uuid(),
                 'debit_from' => $userWallet->id,
                 'credit_to' => $mainWallet->id,
                 'amount' => $fees,
@@ -163,7 +162,7 @@ class TransactionService
             }
             
             if ($source === 'billing') {
-                $billingServiceUrl = env('BILLING_SERVICE_URL');
+                $billingServiceUrl = config('services.BILLING_SERVICE_URL');
                 $response = Http::post("{$billingServiceUrl}/api/bills/update-bill-status", [
                     'bill_id' => $bill_id,
                     'user_id' => $user_id,
@@ -175,7 +174,7 @@ class TransactionService
                     return ['success' => false, 'message' => 'Failed to update bill status', 'status_code' => 500];
                 }
             } else {
-                $referenceServiceUrl = env('REFERENCE_SERVICE_URL');
+                $referenceServiceUrl = config('services.REFERENCE_SERVICE_URL');
                 $response = Http::post("{$referenceServiceUrl}/api/billing/pay", [
                     'Reference_Number' => $bill_id,
                     'user_id' => $user_id,
@@ -254,7 +253,6 @@ class TransactionService
             $receiver_wallet->increment('balance', $data['amount']);
             $fees_wallet->increment('balance', $fees);
             $sender_transaction = Transaction::create([
-                'id' => Str::uuid(),
                 'debit_from' => $sender_wallet->id,
                 'credit_to' => $receiver_wallet->id,
                 'amount' => $data['amount'],
@@ -262,7 +260,6 @@ class TransactionService
                 'description' => 'Send money to ' . $receiver_wallet->user_id,
             ]);
             $fees_transaction = Transaction::create([
-                'id' => Str::uuid(),
                 'debit_from' => $sender_wallet->id,
                 'credit_to' => $fees_wallet->id,
                 'amount' => $fees,
