@@ -44,18 +44,18 @@ class TransactionService
 
         $expectedSignature = $this->generateSignature($bill_id, $timestamp, $nonce, $secretKey);
 
-        // if (!hash_equals($expectedSignature, $signature)) {
-        //     return ['success' => false, 'message' => 'Invalid signature', 'status_code' => 500];
-        // }
+        if (!hash_equals($expectedSignature, $signature)) {
+            return ['success' => false, 'message' => 'Invalid signature', 'status_code' => 500];
+        }
 
-        // $reqTime = strtotime($timestamp);
-        // if (!$reqTime || abs(time() - $reqTime) > 300) {
-        //     return ['success' => false, 'message' => 'Timestamp out of range', 'status_code' => 500];
-        // }
+        $reqTime = strtotime($timestamp);
+        if (!$reqTime || abs(time() - $reqTime) > 300) {
+            return ['success' => false, 'message' => 'Timestamp out of range', 'status_code' => 500];
+        }
 
-        // if ($this->isNonceUsed($nonce)) {
-        //     return ['success' => false, 'message' => 'Nonce already used', 'status_code' => 500];
-        // }
+        if ($this->isNonceUsed($nonce)) {
+            return ['success' => false, 'message' => 'Nonce already used', 'status_code' => 500];
+        }
         $this->markNonceUsed($nonce);
         // --- End Signature, Timestamp, and Nonce Validation ---
 
