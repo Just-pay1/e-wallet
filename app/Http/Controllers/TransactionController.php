@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PayRequest;
 use App\Http\Requests\SendMoneyRequest;
 use App\Http\Resources\SendMoneyResource;
+use App\Http\Resources\TransactionHistoryResource;
 use App\Http\Resources\TransactionResource;
 use App\Models\Transaction;
 use App\Models\Wallet;
@@ -76,13 +77,42 @@ class TransactionController extends Controller
     public function history(Request $request)
     {
         $user_id = $request->header('X-User-ID');
+        if(!$user_id){
+            return response()->json(['error' => 'User ID is required'], 400);
+        }
         $wallet = Wallet::where('user_id', $user_id)->first();
-        $transactions = Transaction::where('debit_from', $wallet->id)
-                        ->orwhere('credit_to', $wallet->id)
-                        ->order('created_at', 'desc')
-                        ->get();
+        $transactions = Transaction::where(function ($query) use ($wallet) {
+                $query->where('debit_from', $wallet->id)
+                    ->orWhere('credit_to', $wallet->id);
+            })
+            ->where('type', '!=', 'fee')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $transactions = $transactions->map(function ($transaction) use ($wallet) {
+            $type = $transaction->type;
+            $typeConfig = config('transaction_types.' . $type, [
+                'logo' => '/icons/pay.svg',
+                'display' => ucfirst(str_replace('_', ' ', $type)),
+            ]);
+            $transaction->logo = $typeConfig['logo'];
+            $transaction->display = $typeConfig['display'];
+            if ($type == 'send' && $transaction->credit_to == $wallet->id) {
+       
+                $transaction->logo = '/icons/receive.svg';
+                $transaction->display = 'Receive Money';
+                $transaction->description = 'You received money from ********' . substr($transaction->debit_from, -4). ' wallet';
+            }elseif($type == 'send' && $transaction->debit_from == $wallet->id){
+                $transaction->description = 'You sent money to ********' . substr($transaction->credit_to, -4). ' wallet';
+            }
+            return $transaction;
+        });
             
-        return response()->json($transactions);
+        return response()->json([
+            'transactions' => TransactionHistoryResource::collection($transactions),
+            'success' => true,
+            'message' => 'Transactions fetched successfully.',
+        ], 200);
     }
 
     public function pay(PayRequest $request)

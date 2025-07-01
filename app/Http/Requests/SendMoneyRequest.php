@@ -24,7 +24,10 @@ class SendMoneyRequest extends FormRequest
         return [
             'receiver_id' => 'required|exists:wallets,user_id',
             'amount' => 'required|numeric|min:0',
-    
+
+            'signature' => 'required|string',
+            'timestamp' => 'required|string',
+            'nonce' => 'required|string',
         ];
     }
 }

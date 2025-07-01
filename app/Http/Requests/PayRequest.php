@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+
 use Illuminate\Foundation\Http\FormRequest;
 
 class PayRequest extends FormRequest
@@ -16,12 +17,12 @@ class PayRequest extends FormRequest
         return [
             'bill_id' => 'required|string|min:1',
             'source' => 'required|string|in:billing,reference',
-            'category' => 'required|string',
+            'category' => 'required|string|in:electric_bill,reference_bill,water_bill,mobile_bill,internet_bill',
             'lat' => 'required|numeric',
             'long' => 'required|numeric',
             'signature' => 'required|string',
             'timestamp' => 'required|string',
-            'nonce' => 'required|string',
+            'nonce' => 'required|string'
         ];
     }
 } 

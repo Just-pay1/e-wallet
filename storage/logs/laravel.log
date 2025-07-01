@@ -17679,3 +17679,38 @@ https://github.com/highlightjs/highlight.js/issues/2277`),W=p,N=y),C===void 0&&(
 [2025-06-30 05:57:36] local.ERROR: cURL error 6: Could not resolve host: api (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for api/billing/pay  
 [2025-06-30 05:58:37] local.ERROR: cURL error 6: Could not resolve host: api (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for api/billing/pay  
 [2025-06-30 05:59:14] local.ERROR: cURL error 6: Could not resolve host: api (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for api/billing/pay  
+[2025-07-01 03:19:22] local.ERROR: Cannot access offset of type string on string {"exception":"[object] (TypeError(code: 0): Cannot access offset of type string on string at D:\\just-pay\\e-wallet\\app\\Http\\Controllers\\TransactionController.php:91)
+[stacktrace]
+#0 [internal function]: App\\Http\\Controllers\\TransactionController->App\\Http\\Controllers\\{closure}(Object(App\\Models\\Transaction), 0)
+#1 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Collections\\Arr.php(609): array_map(Object(Closure), Array, Array)
+#2 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Collections\\Collection.php(799): Illuminate\\Support\\Arr::map(Array, Object(Closure))
+#3 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Collection.php(388): Illuminate\\Support\\Collection->map(Object(Closure))
+#4 D:\\just-pay\\e-wallet\\app\\Http\\Controllers\\TransactionController.php(88): Illuminate\\Database\\Eloquent\\Collection->map(Object(Closure))
+#5 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Controller.php(54): App\\Http\\Controllers\\TransactionController->history(Object(Illuminate\\Http\\Request))
+#6 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\ControllerDispatcher.php(44): Illuminate\\Routing\\Controller->callAction('history', Array)
+#7 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(266): Illuminate\\Routing\\ControllerDispatcher->dispatch(Object(Illuminate\\Routing\\Route), Object(App\\Http\\Controllers\\TransactionController), 'history')
+#8 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(212): Illuminate\\Routing\\Route->runController()
+#9 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(808): Illuminate\\Routing\\Route->run()
+#10 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(170): Illuminate\\Routing\\Router->Illuminate\\Routing\\{closure}(Object(Illuminate\\Http\\Request))
+#11 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Middleware\\SubstituteBindings.php(51): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#12 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Routing\\Middleware\\SubstituteBindings->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#13 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Middleware\\ThrottleRequests.php(161): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#14 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Middleware\\ThrottleRequests.php(92): Illuminate\\Routing\\Middleware\\ThrottleRequests->handleRequest(Object(Illuminate\\Http\\Request), Object(Closure), Array)
+#15 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Routing\\Middleware\\ThrottleRequests->handle(Object(Illuminate\\Http\\Request), Object(Closure), '60', '1')
+#16 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(127): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#17 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(807): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#18 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(786): Illuminate\\Routing\\Router->runRouteWithinStack(Object(Illuminate\\Routing\\Route), Object(Illuminate\\Http\\Request))
+#19 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(750): Illuminate\\Routing\\Router->runRoute(Object(Illuminate\\Http\\Request), Object(Illuminate\\Routing\\Route))
+#20 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(739): Illuminate\\Routing\\Router->dispatchToRoute(Object(Illuminate\\Http\\Request))
+#21 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(201): Illuminate\\Routing\\Router->dispatch(Object(Illuminate\\Http\\Request))
+#22 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(170): Illuminate\\Foundation\\Http\\Kernel->Illuminate\\Foundation\\Http\\{closure}(Object(Illuminate\\Http\\Request))
+#23 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\TrustProxies.php(58): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#24 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Http\\Middleware\\TrustProxies->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#25 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(127): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#26 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(176): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#27 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(145): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter(Object(Illuminate\\Http\\Request))
+#28 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1220): Illuminate\\Foundation\\Http\\Kernel->handle(Object(Illuminate\\Http\\Request))
+#29 D:\\just-pay\\e-wallet\\public\\index.php(17): Illuminate\\Foundation\\Application->handleRequest(Object(Illuminate\\Http\\Request))
+#30 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php(23): require_once('D:\\\\just-pay\\\\e-w...')
+#31 {main}
+"} 

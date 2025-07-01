@@ -130,8 +130,8 @@ class TransactionService
                 'debit_from' => $userWallet->id,
                 'credit_to' => $merchantWallet->id,
                 'amount' => $netAmount,
-                'type' => 'charge',
-                'description' => 'Payment to merchant',
+                'type' => $request->category,
+            'description' => 'Payment to merchant',
             ]);
 
             $feeTransaction = Transaction::create([
