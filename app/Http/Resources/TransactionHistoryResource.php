@@ -18,15 +18,14 @@ class TransactionHistoryResource extends JsonResource
     
         $logoUrl = url($this->logo);
         return [
+            'display' => $this->display,
             'id' => $this->id,
-
             'amount' => $this->amount,
             'type' => $this->type,
             'description' => $this->description,
-            'created_at' => $this->created_at,
-     
+            'date' => $this->created_at->format('d M Y'),
+            'time' => $this->created_at->format('h:i A'),
             'logo' => $logoUrl,
-            'display' => $this->display,
         ];
     }
 } 
