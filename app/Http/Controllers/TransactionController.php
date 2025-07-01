@@ -92,14 +92,14 @@ class TransactionController extends Controller
         $transactions = $transactions->map(function ($transaction) use ($wallet) {
             $type = $transaction->type;
             $typeConfig = config('transaction_types.' . $type, [
-                'logo' => '/icons/pay.svg',
+                'logo' => '/icon/pay.svg',
                 'display' => ucfirst(str_replace('_', ' ', $type)),
             ]);
             $transaction->logo = $typeConfig['logo'];
             $transaction->display = $typeConfig['display'];
             if ($type == 'send' && $transaction->credit_to == $wallet->id) {
        
-                $transaction->logo = '/icons/receive.svg';
+                $transaction->logo = '/icon/receive.svg';
                 $transaction->display = 'Receive Money';
                 $transaction->description = 'You received money from ********' . substr($transaction->debit_from, -4). ' wallet';
             }elseif($type == 'send' && $transaction->debit_from == $wallet->id){

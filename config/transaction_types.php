@@ -2,35 +2,35 @@
 
 return [
     'electric_bill' => [
-        'logo' => '/icons/electrical.svg',
+        'logo' => '/icon/electrical.svg',
         'display' => 'Electric Bill',
     ],
     'reference_bill' => [
-        'logo' => '/icons/reference.svg',
+        'logo' => '/icon/reference.svg',
         'display' => 'Reference Bill',
     ],
     'send' => [
-        'logo' => '/icons/send.svg',
+        'logo' => '/icon/send.svg',
         'display' => 'Send Money',
     ],
     'receive' => [
-        'logo' => '/icons/receive.svg',
+        'logo' => '/icon/receive.svg',
         'display' => 'Receive Money',
     ],
     'pay' => [
-        'logo' => '/icons/pay.svg',
+        'logo' => '/icon/pay.svg',
         'display' => 'Pay Bill',
     ],
     'water_bill' => [
-        'logo' => '/icons/water.svg',
+        'logo' => '/icon/water.svg',
         'display' => 'Water Bill',
     ],
     'mobile_bill' => [
-        'logo' => '/icons/landing_Phone.svg',
+        'logo' => '/icon/landing_Phone.svg',
         'display' => 'Mobile Bill',
     ],
     'internet_bill' => [
-        'logo' => '/icons/internet.svg',
+        'logo' => '/icon/internet.svg',
         'display' => 'Internet Bill',
     ],
 
