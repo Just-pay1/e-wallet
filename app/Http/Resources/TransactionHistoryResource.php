@@ -16,7 +16,7 @@ class TransactionHistoryResource extends JsonResource
     {
 
     
-        $logoUrl = url($this->logo);
+        $logoUrl = url('/transactions'.$this->logo);
         return [
             'display' => $this->display,
             'id' => $this->id,
