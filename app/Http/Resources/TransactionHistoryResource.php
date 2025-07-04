@@ -16,7 +16,7 @@ class TransactionHistoryResource extends JsonResource
     {
 
     
-$logoUrl = 'https://e-wallet.azurewebsites.net'.$this->logo;
+        $logoUrl = 'https://e-wallet.azurewebsites.net'.$this->logo;
         return [
             'display' => $this->display,
             'id' => $this->id,

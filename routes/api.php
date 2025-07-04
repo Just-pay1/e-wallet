@@ -5,14 +5,14 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\WalletController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
-Route::prefix('/wallet')->group(function () {
+Route::prefix('/wallet')->middleware('throttle:60,1')->group(function () {
     Route::get('/getBalance', [WalletController::class, 'getBalance']);
     Route::post('/wallet', [WalletController::class, 'createWallet']);
     Route::post('/deposit', [WalletController::class, 'deposit']);
     Route::post('/withdraw', [WalletController::class, 'withdraw']);
     Route::get('/by-user', [WalletController::class, 'getWalletByUserId']);
 });
-Route::prefix('/transaction')->group(function () {
+Route::prefix('/transaction')->middleware('throttle:60,1')->group(function () {
     Route::post('/transfer', [TransactionController::class, 'transfer']);
     Route::get('/history', [TransactionController::class, 'history']);
     Route::post('/pay', [TransactionController::class, 'pay']);
@@ -33,7 +33,7 @@ Route::post('/test', function(Request $request) {
     // return "here";
 
     
-});
+})->middleware('throttle:60,1');
 Route::any('/debug-post', function (Request $request) {
     return response()->json([
         'method' => $request->method(),
@@ -41,11 +41,11 @@ Route::any('/debug-post', function (Request $request) {
         'headers' => $request->headers->all(),
         'body' => $request->getContent(),
     ]);
-});
+})->middleware('throttle:60,1');
 
 
 
-Route::post('/ip-address', [IpController::class, 'store']);
+Route::post('/ip-address', [IpController::class, 'store'])->middleware('throttle:60,1');
 
 
 
