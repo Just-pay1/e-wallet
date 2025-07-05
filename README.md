@@ -184,28 +184,56 @@ Sends money to another user.
 
 **Send Money Flow:**
 ```mermaid
-flowchart TD
-    A["🚀 User initiates Send Money request"] --> B["📝 Validate request parameters<br/>(recipient_id, amount, description)"]
-    B --> C{"✅ Valid request?"}
-    C -->|No| D["❌ Return validation error"]
-    C -->|Yes| E["🔍 Check sender's wallet balance"]
-    E --> F{"💰 Sufficient balance<br/>(amount + fees)?"}
-    F -->|No| G["❌ Return insufficient funds error"]
-    F -->|Yes| H["👤 Verify recipient exists"]
-    H --> I{"🔍 Recipient found?"}
-    I -->|No| J["❌ Return recipient not found error"]
-    I -->|Yes| K["🧮 Calculate transaction fees"]
-    K --> L["💸 Deduct amount + fees from sender's wallet"]
-    L --> M["💰 Add amount to recipient's wallet"]
-    M --> N["📊 Create transaction records<br/>(for both sender and recipient)"]
-    N --> O["📧 Send notifications<br/>(optional)"]
-    O --> P["✅ Return success response<br/>with transaction details"]
+graph TD;
+    A["🚀 Start Send Money Request"] --> B{"📝 Validate Request & Signature"};
+    B --> C{"🔄 Initiate Async Recipient Verification"};
+    B --> D{"👤 Fetch Sender Wallet from Redis Cache"};
+    B --> E{"🔐 Verify Digital Signature"};
+
+    subgraph "Parallel Operations"
+        C;
+        D;
+        E;
+    end
+
+    C --> F{"⏳ Wait for Operations Complete"};
+    D --> F;
+    E --> F;
+
+    F --> G{"👥 Fetch Recipient Wallet from Redis Cache"};
+    G --> H{"🛡️ Initiate Async Fraud Check"};
+    H --> I{"💰 Check Sender Balance"};
+    I --> J["🔄 Begin DB Transaction"];
+
+    subgraph "Database Transaction"
+        J --> K{"💸 Debit Sender Wallet<br/>💰 Credit Recipient Wallet<br/>📊 Create Transaction Records<br/>🗂️ Update Redis Cache"};
+        K --> L{"⏳ Wait for Fraud Check Result"};
+        L --> M{"🚨 Fraud Detected?"};
+        M -- "Yes" --> P["🔄 Rollback DB Transaction<br/>♻️ Invalidate Cache"];
+        M -- "No" --> N{"📱 Send Notification Status"};
+        N --> O{"✅ Notification Sent?"};
+        O -- "Yes" --> Q["✅ Commit DB Transaction<br/>💾 Update Redis Cache"];
+        O -- "No" --> Q;
+    end
+
+    subgraph "Signature & Security Flow"
+        E --> E1["🔍 Extract Public Key"];
+        E1 --> E2{"🔐 Signature Valid?"};
+        E2 -- "No" --> E3["❌ Return Signature Error"];
+        E2 -- "Yes" --> F;
+    end
+
+    Q --> R["📧 Send Transfer Confirmation<br/>📱 Push Notifications"];
+    P --> S["❌ Transfer Failed"];
+    R --> T["🎉 End - Success"];
+    S --> T;
+    E3 --> T;
     
     style A fill:#e1f5fe
-    style P fill:#e8f5e8
-    style D fill:#ffebee
-    style G fill:#ffebee
-    style J fill:#ffebee
+    style T fill:#e8f5e8
+    style P fill:#ffebee
+    style S fill:#ffebee
+    style E3 fill:#ffebee
 ```
 
 #### Calculate Fees
