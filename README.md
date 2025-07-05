@@ -115,29 +115,56 @@ Processes a payment transaction.
 
 **Payment Flow:**
 ```mermaid
-flowchart TD
-    A["🛒 User initiates Payment request"] --> B["📝 Validate request parameters<br/>(recipient_id, amount, description)"]
-    B --> C{"✅ Valid request?"}
-    C -->|No| D["❌ Return validation error"]
-    C -->|Yes| E["🔍 Check payer's wallet balance"]
-    E --> F{"💰 Sufficient balance<br/>(amount + fees)?"}
-    F -->|No| G["❌ Return insufficient funds error"]
-    F -->|Yes| H["🏪 Verify payee/merchant exists"]
-    H --> I{"🔍 Payee found?"}
-    I -->|No| J["❌ Return payee not found error"]
-    I -->|Yes| K["🧮 Calculate payment fees"]
-    K --> L["💸 Deduct amount + fees from payer's wallet"]
-    L --> M["💰 Add amount to payee's wallet"]
-    M --> N["📊 Create payment transaction records<br/>(for both payer and payee)"]
-    N --> O["🧾 Generate payment receipt"]
-    O --> P["📧 Send payment confirmation<br/>(optional)"]
-    P --> Q["✅ Return success response<br/>with payment details"]
+graph TD;
+    A["🛒 Start Payment Request"] --> B{"📝 Validate Request & Signature"};
+    B --> C{"🔄 Initiate Async Bill Fetch"};
+    B --> D{"👤 Fetch User Wallet from Redis Cache"};
+    B --> E{"🔐 Verify Digital Signature"};
+
+    subgraph "Parallel Operations"
+        C;
+        D;
+        E;
+    end
+
+    C --> F{"⏳ Wait for Operations Complete"};
+    D --> F;
+    E --> F;
+
+    F --> G{"🏪 Fetch Merchant Wallet from Redis Cache"};
+    G --> H{"🛡️ Initiate Async Fraud Check"};
+    H --> I{"💰 Check User Balance"};
+    I --> J["🔄 Begin DB Transaction"];
+
+    subgraph "Database Transaction"
+        J --> K{"💸 Debit/Credit Wallets<br/>📊 Create Transaction Records<br/>🗂️ Update Redis Cache"};
+        K --> L{"⏳ Wait for Fraud Check Result"};
+        L --> M{"🚨 Fraud Detected?"};
+        M -- "Yes" --> P["🔄 Rollback DB Transaction<br/>♻️ Invalidate Cache"];
+        M -- "No" --> N{"📋 Update External Bill Status"};
+        N --> O{"✅ Update Succeeded?"};
+        O -- "Yes" --> Q["✅ Commit DB Transaction<br/>💾 Update Redis Cache"];
+        O -- "No" --> P;
+    end
+
+    subgraph "Signature & Security Flow"
+        E --> E1["🔍 Extract Public Key"];
+        E1 --> E2{"🔐 Signature Valid?"};
+        E2 -- "No" --> E3["❌ Return Signature Error"];
+        E2 -- "Yes" --> F;
+    end
+
+    Q --> R["🧾 Generate Payment Receipt<br/>📧 Send Confirmation"];
+    P --> S["❌ Payment Failed"];
+    R --> T["🎉 End - Success"];
+    S --> T;
+    E3 --> T;
     
     style A fill:#fff3e0
-    style Q fill:#e8f5e8
-    style D fill:#ffebee
-    style G fill:#ffebee
-    style J fill:#ffebee
+    style T fill:#e8f5e8
+    style P fill:#ffebee
+    style S fill:#ffebee
+    style E3 fill:#ffebee
 ```
 
 #### Send Money
