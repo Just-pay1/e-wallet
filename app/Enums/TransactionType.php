@@ -12,6 +12,7 @@ enum TransactionType: string
     case SEND = 'send';
     case WATER_BILL = 'water_bill';
     case MOBILE_BILL = 'mobile_bill';
+    case GAS_BILL = 'gas_bill';
     case INTERNET_BILL = 'internet_bill';
     case PAY = 'pay';
     case FEE = 'fee';

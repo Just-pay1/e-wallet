@@ -17,7 +17,7 @@ class PayRequest extends FormRequest
         return [
             'bill_id' => 'required|string|min:1',
             'source' => 'required|string|in:billing,reference',
-            'category' => 'required|string|in:electric_bill,reference_bill,water_bill,mobile_bill,internet_bill',
+            'category' => 'required|string|in:electric_bill,reference_bill,water_bill,mobile_bill,internet_bill,gas_bill',
             'lat' => 'required|numeric',
             'long' => 'required|numeric',
             'signature' => 'required|string',
