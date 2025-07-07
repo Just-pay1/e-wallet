@@ -124,7 +124,7 @@ class TransactionService
         if ($userWallet->balance < ($netAmount + $fees)) {
             return ['success' => false, 'message' => 'Insufficient funds'];
         }
-    dd($billData);
+
         DB::beginTransaction();
         try {
             if($source === 'billing' && $Fee_from === 'merchant'){
