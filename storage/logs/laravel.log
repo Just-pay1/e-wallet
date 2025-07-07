@@ -17714,3 +17714,5 @@ https://github.com/highlightjs/highlight.js/issues/2277`),W=p,N=y),C===void 0&&(
 #30 D:\\just-pay\\e-wallet\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php(23): require_once('D:\\\\just-pay\\\\e-w...')
 #31 {main}
 "} 
+[2025-07-07 01:27:21] local.ERROR: An unexpected error occurred in TransactionController@pay {"details":"Undefined variable $fee"} 
+[2025-07-07 01:29:33] local.ERROR: An unexpected error occurred in TransactionController@pay {"details":"Undefined variable $flag"} 
