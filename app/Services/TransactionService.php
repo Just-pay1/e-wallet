@@ -90,8 +90,12 @@ class TransactionService
             return ['success' => false, 'message' => $response['error'] ?? 'Error from external service', 'status_code' => $response->status()];
         }
 
-    $billData = $response->json()['data'];
+        $billData = $response->json()['data'];
 
+        if($source === 'billing'){
+            $Fee_from = $billData['merchant']['fee_from'];
+        }
+   
         $merchantWallet = Wallet::where('user_id', $billData['merchant_id'])->first();
         if (! $merchantWallet) {
             return ['success' => false, 'message' => 'Merchant not found', 'status_code' => 404];
@@ -120,27 +124,53 @@ class TransactionService
         if ($userWallet->balance < ($netAmount + $fees)) {
             return ['success' => false, 'message' => 'Insufficient funds'];
         }
+    dd($billData);
         DB::beginTransaction();
         try {
-            $userWallet->decrement('balance', $netAmount + $fees);
-            $merchantWallet->increment('balance', $netAmount);
-            $mainWallet->increment('balance', $fees);
+            if($source === 'billing' && $Fee_from === 'merchant'){
+                $userWallet->decrement('balance', $netAmount);
+                $merchant_money = $netAmount - $fees;
+                $merchantWallet->increment('balance', $merchant_money);
+                $mainWallet->increment('balance', $fees);
 
-            $merchantTransaction = Transaction::create([
-                'debit_from' => $userWallet->id,
-                'credit_to' => $merchantWallet->id,
-                'amount' => $netAmount,
-                'type' => $request->category,
-            'description' => 'Payment to merchant',
-            ]);
+                $merchantTransaction = Transaction::create([
+                    'debit_from' => $userWallet->id,
+                    'credit_to' => $merchantWallet->id,
+                    'amount' => $netAmount,
+                    'type' => $request->category,
+                    'description' => 'Payment to merchant',
+                ]);
+    
+                $feeTransaction = Transaction::create([
+                    'debit_from' => $merchantWallet->id,
+                    'credit_to' => $mainWallet->id,
+                    'amount' => $fees,
+                    'type' => 'fee',
+                    'description' => 'Payment fees',
+                ]);
+            }
+            else{
+                $userWallet->decrement('balance', $netAmount + $fees);
+                $merchantWallet->increment('balance', $netAmount);
+                $mainWallet->increment('balance', $fees);
+    
+                $merchantTransaction = Transaction::create([
+                    'debit_from' => $userWallet->id,
+                    'credit_to' => $merchantWallet->id,
+                    'amount' => $netAmount,
+                    'type' => $request->category,
+                    'description' => 'Payment to merchant',
+                ]);
+    
+                $feeTransaction = Transaction::create([
+                    'debit_from' => $userWallet->id,
+                    'credit_to' => $mainWallet->id,
+                    'amount' => $fees,
+                    'type' => 'fee',
+                    'description' => 'Payment fees',
+                ]);
+            }
 
-            $feeTransaction = Transaction::create([
-                'debit_from' => $userWallet->id,
-                'credit_to' => $mainWallet->id,
-                'amount' => $fees,
-                'type' => 'fee',
-                'description' => 'Payment fees',
-            ]);
 
             if ($fraudPromise) {
                 try {

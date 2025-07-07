@@ -16,12 +16,16 @@ class TransactionResource extends JsonResource
     {
         $merchantTransaction = $this['merchant_transaction'];
         $feeTransaction = $this['fee_transaction'];
+        if($merchantTransaction->credit_to === $feeTransaction->debit_from){
+            $fee = 1;
+        }
+       
         return [
             // 'merchant_transaction' => new SingleTransactionResource($merchantTransaction),
             // 'fee_transaction' => new SingleTransactionResource($feeTransaction),
             'id' => $merchantTransaction->id,
             'amount' => $merchantTransaction->amount,
-            'fee' => $feeTransaction->amount,
+            'fee' => $fee ? 0 : $feeTransaction->amount,
             'total' => $merchantTransaction->amount + $feeTransaction->amount,
             'date' => $merchantTransaction->created_at->toDateString(),
             'time' => $merchantTransaction->created_at->toTimeString(),
