@@ -57,7 +57,7 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => [],
-            'timezone' => '+02:00', // Cairo timezone
+            'timezone' => '+03:00', // Cairo timezone
         ],
 
 
@@ -78,7 +78,7 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => storage_path('cert/DigiCertGlobalRootCA.crt.pem'), // Path to the SSL certificate
                 // PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false, // Disable server certificate verification (optional)
             ]) : [],
-            'timezone' => '+02:00', // Cairo timezone
+            'timezone' => '+03:00', // Cairo timezone
         ],
 
         'mariadb' => [
