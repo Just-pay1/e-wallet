@@ -19,8 +19,6 @@ class TransactionResource extends JsonResource
         if($merchantTransaction->credit_to === $feeTransaction->debit_from){
       
             return [
-                // 'merchant_transaction' => new SingleTransactionResource($merchantTransaction),
-                // 'fee_transaction' => new SingleTransactionResource($feeTransaction),
                 'id' => $merchantTransaction->id,
                 'amount' => $merchantTransaction->amount,
                 'fee' => 0,
